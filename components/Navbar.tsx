@@ -2,11 +2,13 @@ import { Heart, ShoppingCart, UserRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import SearchInput from "./Search";
+import { Button } from "./ui/button";
+import MobileHeader from "./MobileHeader";
 
 const Navbar = () => {
   return (
     <div className='bg-[#F0F2F3]'>
-      <div className='block sm:flex items-center justify-between w-8/12 mx-auto py-2'>
+      <div className='flex flex-col sm:flex-row items-center justify-between gap-2 lg:w-8/12 mx-auto py-2 px-2'>
         <Link href={"/"}>
           <Image
             src={"assets/logo.svg"}
@@ -23,7 +25,7 @@ const Navbar = () => {
 
         <div className='hidden lg:block'>
           <div className='flex items-center justify-between gap-2'>
-            <div className='nav-btn'>
+            <Button variant={"outline"} className='nav-btn'>
               <div className='flex items-center justify-between gap-2'>
                 <ShoppingCart />
                 Cart
@@ -31,14 +33,18 @@ const Navbar = () => {
                   1
                 </span>
               </div>
-            </div>
-            <div className='nav-btn'>
+            </Button>
+            <Button variant={"outline"} className='nav-btn'>
               <Heart />
-            </div>
-            <div className='nav-btn'>
+            </Button>
+            <Button variant={"outline"} className='nav-btn'>
               <UserRound />
-            </div>
+            </Button>
           </div>
+        </div>
+
+        <div className='lg:hidden'>
+          <MobileHeader />
         </div>
       </div>
     </div>
