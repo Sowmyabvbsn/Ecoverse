@@ -15,6 +15,10 @@
     @apply p-2 bg-white text-black border-none;
   }
   .container {
-    @apply w-8/12 mx-auto;
+    @apply w-full xl:w-4/5 mx-auto;
+  }
+
+  .nav-link {
+    @apply relative text-green-800 hover:text-green-600 after:content-[""] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-[2px] after:bg-green-600 after:w-0 hover:after:w-full after:transition-all after:duration-300 after:ease-in-out;
   }
 }
