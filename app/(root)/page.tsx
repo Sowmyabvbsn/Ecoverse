@@ -3,7 +3,7 @@ import { useState } from "react";
 import Header from "../../components/Header";
 import HeroSection from "@/components/HeroSection";
 import FeatureSection from "@/components/FeatureSection";
-import SearchProduct from "@/components/SearchProduct";
+import HomeSearch from "@/components/HomeSearch";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
       <main className='flex-grow'>
         <HeroSection />
         <FeatureSection />
-        <SearchProduct />
+        <HomeSearch />
       </main>
 
       <Footer />

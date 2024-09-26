@@ -3,7 +3,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Search } from "lucide-react";
 
-const SearchProduct = () => {
+const HomeSearch = () => {
   return (
     <section className='bg-green-50 py-12 md:py-16'>
       <div className='container mx-auto px-4'>
@@ -29,4 +29,4 @@ const SearchProduct = () => {
   );
 };
 
-export default SearchProduct;
+export default HomeSearch;
