@@ -7,7 +7,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
@@ -36,7 +35,7 @@ const Filters = () => {
       <div>
         <h2 className='text-lg font-semibold mb-2'>Category</h2>
         <Select>
-          <SelectTrigger>
+          <SelectTrigger className='bg-white'>
             <SelectValue placeholder='Select category' />
           </SelectTrigger>
           <SelectContent>
@@ -57,7 +56,7 @@ const Filters = () => {
         // value={selectedEcoRating}
         // onValueChange={setSelectedEcoRating}
         >
-          <SelectTrigger>
+          <SelectTrigger className='bg-white'>
             <SelectValue placeholder='Select eco-rating' />
           </SelectTrigger>
           <SelectContent>
@@ -75,6 +74,7 @@ const Filters = () => {
         <Checkbox
           id='inStock'
           // checked={inStock} onCheckedChange={setInStock}
+          className='bg-white'
         />
         <label
           htmlFor='inStock'

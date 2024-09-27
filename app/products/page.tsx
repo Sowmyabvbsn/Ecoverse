@@ -1,4 +1,5 @@
 import Filters from "@/components/Products/Filters";
+import ProductLists from "@/components/Products/ProductLists";
 import SearchProducts from "@/components/Products/SearchProducts";
 import React from "react";
 
@@ -12,6 +13,7 @@ const Products = () => {
         <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
           {/* Filters */}
           <Filters />
+          <ProductLists />
         </div>
       </div>
     </div>
