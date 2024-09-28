@@ -1,17 +1,39 @@
 "use client";
 
+import { closeMenu, toggleMenu } from "@/features/ui/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import { Heart, Menu, ShoppingCart, User, X } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
-import { Dispatch, SetStateAction } from "react";
 
-const Header = ({
-  open,
-  menuToggle,
-}: {
-  open: boolean;
-  menuToggle: Dispatch<SetStateAction<boolean>>;
-}) => {
+const Header = () => {
+  const dispatch = useAppDispatch();
+  const isMenuOpen = useAppSelector((state) => state.ui.isMenuOpen);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleToggleMenu = () => {
+    dispatch(toggleMenu());
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        dispatch(closeMenu());
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen, dispatch]);
+
   return (
     <div>
       <header className='bg-green-50 py-4 relative z-20'>
@@ -61,7 +83,7 @@ const Header = ({
             <Button
               variant='ghost'
               className='md:hidden'
-              onClick={() => menuToggle(true)}
+              onClick={handleToggleMenu}
             >
               <Menu className='h-6 w-6' />
             </Button>
@@ -71,12 +93,13 @@ const Header = ({
 
       <div
         className={`fixed inset-y-0 right-0 z-50 w-64 bg-green-50 shadow-lg transform ${
-          open ? "translate-x-0" : "translate-x-full"
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out md:hidden`}
+        ref={menuRef}
       >
         <div className='flex justify-between items-center p-4 border-b border-green-200'>
           <span className='text-xl font-bold text-green-600'>Menu</span>
-          <Button variant='ghost' onClick={() => menuToggle(false)}>
+          <Button variant='ghost' onClick={handleToggleMenu}>
             <X className='h-6 w-6' />
           </Button>
         </div>

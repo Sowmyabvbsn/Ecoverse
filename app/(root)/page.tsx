@@ -1,21 +1,20 @@
 "use client";
-import { useState } from "react";
-import Header from "../../components/Header";
-import HeroSection from "@/components/HeroSection";
 import FeatureSection from "@/components/FeatureSection";
-import HomeSearch from "@/components/HomeSearch";
 import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
+import HomeSearch from "@/components/HomeSearch";
+import Header from "../../components/Header";
+import { useAppSelector } from "@/hooks/useReduxHooks";
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isMenuOpen = useAppSelector((state) => state.ui.isMenuOpen);
   return (
     <div>
       {isMenuOpen && (
         <div className='fixed inset-0 bg-black opacity-30 z-30'></div>
       )}
 
-      <Header open={isMenuOpen} menuToggle={setIsMenuOpen} />
-
+      <Header />
       <main className='flex-grow'>
         <HeroSection />
         <FeatureSection />
