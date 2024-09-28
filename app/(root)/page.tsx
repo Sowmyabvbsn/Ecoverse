@@ -1,8 +1,8 @@
 "use client";
-import FeatureSection from "@/components/FeatureSection";
+import FeatureSection from "@/components/Home/FeatureSection";
 import Footer from "@/components/Footer";
-import HeroSection from "@/components/HeroSection";
-import HomeSearch from "@/components/HomeSearch";
+import HeroSection from "@/components/Home/HeroSection";
+import HomeSearch from "@/components/Home/HomeSearch";
 import Header from "../../components/Header";
 import { useAppSelector } from "@/hooks/useReduxHooks";
 

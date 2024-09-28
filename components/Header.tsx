@@ -42,20 +42,29 @@ const Header = () => {
             <span className='text-2xl font-bold text-green-600'>EcoMart</span>
           </Link>
           <nav className='hidden md:flex space-x-4'>
-            <Link href='/' className='nav-link'>
+            <Link href='/' className='text-green-800 hover:text-green-600'>
               Home
             </Link>
-            <Link href='/products' className='nav-link'>
-              Products
+            <Link
+              href='/auctions'
+              className='text-green-800 hover:text-green-600'
+            >
+              Auctions
             </Link>
-            <Link href='/collections' className='nav-link'>
-              Collections
+            <Link
+              href='/eco-sellers'
+              className='text-green-800 hover:text-green-600'
+            >
+              Eco-Sellers
             </Link>
-            <Link href='/about' className='nav-link'>
+            <Link
+              href='/subscriptions'
+              className='text-green-800 hover:text-green-600'
+            >
+              Subscriptions
+            </Link>
+            <Link href='/about' className='text-green-800 hover:text-green-600'>
               About
-            </Link>
-            <Link href='/contact' className='nav-link'>
-              Contact
             </Link>
           </nav>
           <div className='flex items-center space-x-4'>
@@ -108,28 +117,28 @@ const Header = () => {
             Home
           </Link>
           <Link
-            href='/products'
+            href='/auctions'
             className='text-green-800 hover:text-green-600 py-2'
           >
-            Products
+            Auctions
           </Link>
           <Link
-            href='/collections'
+            href='/eco-sellers'
             className='text-green-800 hover:text-green-600 py-2'
           >
-            Collections
+            Eco-Sellers
+          </Link>
+          <Link
+            href='/subscriptions'
+            className='text-green-800 hover:text-green-600 py-2'
+          >
+            Subscriptions
           </Link>
           <Link
             href='/about'
             className='text-green-800 hover:text-green-600 py-2'
           >
             About
-          </Link>
-          <Link
-            href='/contact'
-            className='text-green-800 hover:text-green-600 py-2'
-          >
-            Contact
           </Link>
           <Link
             href='/signin'
