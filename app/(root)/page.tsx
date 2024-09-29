@@ -20,7 +20,6 @@ export default function Home() {
       <main className='flex-grow'>
         <HeroSection />
         <FeatureSection />
-        {/* <HomeSearch /> */}
         <WhyChooseEcoBid />
         <CategoryList />
         <JoinUS />

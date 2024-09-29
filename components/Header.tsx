@@ -40,7 +40,7 @@ const Header = () => {
         <div className='container mx-auto px-4 flex items-center justify-between'>
           <Link href='/' className='flex items-center space-x-2'>
             <Leaf className='h-8 w-8 text-green-600' />
-            <span className='text-2xl font-bold text-green-600'>EcoMart</span>
+            <span className='text-2xl font-bold text-green-600'>EcoBid</span>
           </Link>
           <nav className='hidden md:flex space-x-4'>
             <Link href='/' className='text-green-800 hover:text-green-600'>
