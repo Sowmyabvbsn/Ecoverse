@@ -1,10 +1,5 @@
 import { InstagramLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
-import {
-  Facebook,
-  FacebookIcon,
-  Instagram,
-  LucideFacebook,
-} from "lucide-react";
+import { Facebook } from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
