@@ -25,4 +25,8 @@
   .section-heading {
     @apply text-2xl md:text-3xl font-bold text-green-800 mb-8 text-center;
   }
+
+  .page-heading {
+    @apply text-3xl font-bold text-green-800 mb-8;
+  }
 }

@@ -89,9 +89,7 @@ export default function AuctionsPage() {
   return (
     <div className='min-h-screen bg-green-50 py-8'>
       <div className='container px-4'>
-        <h2 className='text-3xl font-bold text-green-800 mb-8'>
-          Live Auctions
-        </h2>
+        <h2 className='page-heading'>Live Auctions</h2>
 
         <div className='flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0'>
           <SearchFilter
