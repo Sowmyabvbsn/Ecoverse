@@ -1,10 +1,12 @@
 "use client";
-import FeatureSection from "@/components/Home/FeatureSection";
 import Footer from "@/components/Footer";
+import FeatureSection from "@/components/Home/FeatureSection";
 import HeroSection from "@/components/Home/HeroSection";
-import HomeSearch from "@/components/Home/HomeSearch";
-import Header from "../../components/Header";
+import WhyChooseEcoBid from "@/components/Home/WhyChooseEcoBid";
 import { useAppSelector } from "@/hooks/useReduxHooks";
+import Header from "../../components/Header";
+import CategoryList from "@/components/Home/CategoryList";
+import JoinUS from "@/components/Home/JoinUS";
 
 export default function Home() {
   const isMenuOpen = useAppSelector((state) => state.ui.isMenuOpen);
@@ -18,7 +20,10 @@ export default function Home() {
       <main className='flex-grow'>
         <HeroSection />
         <FeatureSection />
-        <HomeSearch />
+        {/* <HomeSearch /> */}
+        <WhyChooseEcoBid />
+        <CategoryList />
+        <JoinUS />
       </main>
 
       <Footer />

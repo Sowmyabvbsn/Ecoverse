@@ -1,7 +1,11 @@
+import { InstagramLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import {
+  Facebook,
+  FacebookIcon,
+  Instagram,
+  LucideFacebook,
+} from "lucide-react";
 import Link from "next/link";
-import React from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 
 const Footer = () => {
   return (
@@ -11,8 +15,9 @@ const Footer = () => {
           <div>
             <h3 className='text-lg font-semibold mb-4'>About EcoMart</h3>
             <p className='text-sm'>
-              EcoMart is your one-stop shop for sustainable and eco-friendly
-              products. Join us in making the world a greener place!
+              EcoBid is your platform for discovering and bidding on
+              sustainable, eco-friendly products. Join us in making the world a
+              greener place through conscious consumption!
             </p>
           </div>
           <div>
@@ -24,45 +29,42 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link href='/how-it-works' className='text-sm hover:underline'>
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='/sustainability'
+                  className='text-sm hover:underline'
+                >
+                  Our Sustainability Commitment
+                </Link>
+              </li>
+              <li>
                 <Link href='/contact' className='text-sm hover:underline'>
                   Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href='/faq' className='text-sm hover:underline'>
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href='/privacy' className='text-sm hover:underline'>
-                  Privacy Policy
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className='text-lg font-semibold mb-4'>Stay Connected</h3>
-            <p className='text-sm mb-4'>
-              Subscribe to our newsletter for the latest eco-friendly products
-              and offers.
-            </p>
-            <form className='flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2'>
-              <Input
-                type='email'
-                placeholder='Your email'
-                className='flex-grow placeholder:text-white'
-              />
-              <Button
-                type='submit'
-                className='bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto'
-              >
-                Subscribe
-              </Button>
-            </form>
+            <h3 className='text-lg font-semibold mb-4'>Connected With Us</h3>
+            <div className='flex space-x-4'>
+              <Link href={"#"} className='text-white hover:text-green-200 '>
+                <Facebook className='h-6 w-6' />
+              </Link>
+              <Link href={"#"} className='text-white hover:text-green-200'>
+                <InstagramLogoIcon className=' h-6 w-6' />
+              </Link>
+              <Link href={"#"} className='text-white hover:text-green-200'>
+                <TwitterLogoIcon className='h-6 w-6' />
+              </Link>
+            </div>
           </div>
         </div>
         <div className='mt-8 text-center text-sm'>
-          <p>&copy; 2024 EcoMart. All rights reserved.</p>
+          <p>&copy; 2024 EcoBid. All rights reserved.</p>
         </div>
       </div>
     </footer>

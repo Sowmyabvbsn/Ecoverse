@@ -2,7 +2,7 @@
 
 import { closeMenu, toggleMenu } from "@/features/ui/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
-import { Heart, Menu, ShoppingCart, User, X } from "lucide-react";
+import { Heart, Leaf, Menu, ShoppingCart, User, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
@@ -39,6 +39,7 @@ const Header = () => {
       <header className='bg-green-50 py-4 relative z-20'>
         <div className='container mx-auto px-4 flex items-center justify-between'>
           <Link href='/' className='flex items-center space-x-2'>
+            <Leaf className='h-8 w-8 text-green-600' />
             <span className='text-2xl font-bold text-green-600'>EcoMart</span>
           </Link>
           <nav className='hidden md:flex space-x-4'>
