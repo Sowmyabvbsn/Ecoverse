@@ -46,13 +46,25 @@ const Footer = () => {
           <div>
             <h3 className='text-lg font-semibold mb-4'>Connected With Us</h3>
             <div className='flex space-x-4'>
-              <Link href={"#"} className='text-white hover:text-green-200 '>
+              <Link
+                href={"https://www.facebook.com/"}
+                target='_blank'
+                className='text-white hover:text-green-200 '
+              >
                 <Facebook className='h-6 w-6' />
               </Link>
-              <Link href={"#"} className='text-white hover:text-green-200'>
+              <Link
+                href={"https://www.instagram.com/accounts/login/?hl=en"}
+                target='_blank'
+                className='text-white hover:text-green-200'
+              >
                 <InstagramLogoIcon className=' h-6 w-6' />
               </Link>
-              <Link href={"#"} className='text-white hover:text-green-200'>
+              <Link
+                href={"https://x.com/"}
+                target='_blank'
+                className='text-white hover:text-green-200'
+              >
                 <TwitterLogoIcon className='h-6 w-6' />
               </Link>
             </div>
