@@ -1,6 +1,6 @@
-import React from "react";
-import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 const HeroSection = () => {
   return (
@@ -21,7 +21,10 @@ const HeroSection = () => {
             variant='outline'
             className='border-green-600 text-green-600 hover:bg-green-50 w-full md:w-auto'
           >
-            <Link href='/eco-sellers'>Browse Eco-Sellers</Link>
+            <Link href='/products' className='flex items-center gap-2'>
+              <span>Browse Products</span>
+              <ArrowRight />
+            </Link>
           </Button>
         </div>
       </div>
