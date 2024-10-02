@@ -3,6 +3,7 @@ import React from "react";
 import BidCard from "../BidCard";
 
 export interface ICard {
+  id?: number;
   name: string;
   time: string;
   currentBid: number;

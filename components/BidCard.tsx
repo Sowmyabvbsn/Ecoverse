@@ -1,10 +1,21 @@
+"use client";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ICard } from "./Home/FeatureSection";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
-const BidCard = ({ name, image, badges, time, buyNow, currentBid }: ICard) => {
+const BidCard = ({
+  id,
+  name,
+  image,
+  badges,
+  time,
+  buyNow,
+  currentBid,
+}: ICard) => {
+  const router = useRouter();
   return (
     <Card className='overflow-hidden'>
       <Image
@@ -43,6 +54,7 @@ const BidCard = ({ name, image, badges, time, buyNow, currentBid }: ICard) => {
           <Button
             variant='outline'
             className='border-green-600 text-green-600 hover:bg-green-50'
+            onClick={() => router.push(`/auctions/${id}`)}
           >
             Buy Now: ${buyNow}
           </Button>
