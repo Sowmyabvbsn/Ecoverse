@@ -1,35 +1,12 @@
 "use client";
 
+import OrderManagement from "@/components/Admin/OrderManagement";
 import ProductManagement from "@/components/Admin/ProductManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, List, Package, ShoppingBag, Users } from "lucide-react";
 import { useState } from "react";
 
 // Mock data
-
-const orders = [
-  {
-    id: 1,
-    customer: "John Doe",
-    total: 75,
-    status: "Shipped",
-    date: "2023-06-01",
-  },
-  {
-    id: 2,
-    customer: "Jane Smith",
-    total: 120,
-    status: "Processing",
-    date: "2023-06-02",
-  },
-  {
-    id: 3,
-    customer: "Bob Johnson",
-    total: 50,
-    status: "Delivered",
-    date: "2023-05-30",
-  },
-];
 
 const users = [
   {
@@ -57,7 +34,7 @@ const users = [
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products");
-  const [isAddProductDialogOpen, setIsAddProductDialogOpen] = useState(false);
+
   return (
     <div>
       <div className='min-h-screen bg-green-50 py-8'>
@@ -86,7 +63,9 @@ export default function AdminDashboard() {
             <TabsContent value='products'>
               <ProductManagement />
             </TabsContent>
-            <TabsContent value='order'></TabsContent>
+            <TabsContent value='orders'>
+              <OrderManagement />
+            </TabsContent>
             <TabsContent value='users'></TabsContent>
             <TabsContent value='categories'></TabsContent>
             <TabsContent value='reports'></TabsContent>
