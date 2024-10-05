@@ -1,5 +1,6 @@
 "use client";
 
+import CategoryManagement from "@/components/Admin/CategoryManagement";
 import OrderManagement from "@/components/Admin/OrderManagement";
 import ProductManagement from "@/components/Admin/ProductManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -66,8 +67,10 @@ export default function AdminDashboard() {
             <TabsContent value='orders'>
               <OrderManagement />
             </TabsContent>
+            <TabsContent value='categories'>
+              <CategoryManagement />
+            </TabsContent>
             <TabsContent value='users'></TabsContent>
-            <TabsContent value='categories'></TabsContent>
             <TabsContent value='reports'></TabsContent>
           </Tabs>
         </div>
