@@ -18,8 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import AddProductModel from "./AddProductModel";
 
-const categories = ["Home", "Personal Care", "Tech", "Fashion", "Food"];
+export const categories = ["Home", "Personal Care", "Tech", "Fashion", "Food"];
 const products = [
   {
     id: 1,
@@ -107,6 +108,11 @@ const ProductManagement = () => {
           ))}
         </TableBody>
       </Table>
+
+      <AddProductModel
+        isOpenDialog={isAddProductDialogOpen}
+        setIsOpenDialog={setIsAddProductDialogOpen}
+      />
     </div>
   );
 };
