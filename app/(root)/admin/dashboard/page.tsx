@@ -3,35 +3,11 @@
 import CategoryManagement from "@/components/Admin/CategoryManagement";
 import OrderManagement from "@/components/Admin/OrderManagement";
 import ProductManagement from "@/components/Admin/ProductManagement";
+import ProductsReports from "@/components/Admin/ProductsReports";
+import UsersManagement from "@/components/Admin/UsersManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, List, Package, ShoppingBag, Users } from "lucide-react";
 import { useState } from "react";
-
-// Mock data
-
-const users = [
-  {
-    id: 1,
-    name: "Alice Cooper",
-    email: "alice@example.com",
-    role: "Buyer",
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Bob Dylan",
-    email: "bob@example.com",
-    role: "Seller",
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    email: "charlie@example.com",
-    role: "Admin",
-    status: "Inactive",
-  },
-];
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("products");
@@ -70,8 +46,12 @@ export default function AdminDashboard() {
             <TabsContent value='categories'>
               <CategoryManagement />
             </TabsContent>
-            <TabsContent value='users'></TabsContent>
-            <TabsContent value='reports'></TabsContent>
+            <TabsContent value='users'>
+              <UsersManagement />
+            </TabsContent>
+            <TabsContent value='reports'>
+              <ProductsReports />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
