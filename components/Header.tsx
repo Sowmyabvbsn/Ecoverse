@@ -70,7 +70,7 @@ const Header = () => {
           </nav>
           <div className='flex items-center space-x-4'>
             <Link
-              href='/signin'
+              href='/login'
               className='text-green-800 hover:text-green-600 hidden md:inline-block'
             >
               Sign In

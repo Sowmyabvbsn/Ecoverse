@@ -1,0 +1,8 @@
+{
+  "notebook.stickyScroll.enabled": false,
+  "notebook.outline.showMarkdownHeadersOnly": true,
+  "search.experimental.closedNotebookRichContentResults": false,
+  "search.quickAccess.preserveInput": false,
+  "search.quickOpen.includeSymbols": false,
+  "workbench.view.alwaysShowHeaderActions": false
+}

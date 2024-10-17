@@ -25,6 +25,8 @@ import { passwordMatchSchema } from "@/validation/passwordMatchSchema";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { z } from "zod";
 import Link from "next/link";
+import { signIn } from "@/auth";
+import { register } from "./actions";
 
 const formSchema = z
   .object({
@@ -159,7 +161,13 @@ export default function RegisterPage() {
           </Form>
         </CardContent>
 
-        <CardFooter className='flex-col'>
+        <CardFooter className='flex-col gap-2'>
+          <h1>OR</h1>
+
+          <Button onClick={() => register("google")}>
+            Register With Google
+          </Button>
+
           <div className='text-muted-foreground text-sm'>
             Already have a account?{" "}
             <Link href={"/login"} className='underline'>
