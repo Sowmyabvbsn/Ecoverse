@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -20,41 +21,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { passwordSchema } from "@/validation/passwordSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import { passwordMatchSchema } from "@/validation/passwordMatchSchema";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-
 import { z } from "zod";
 import Link from "next/link";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: passwordSchema,
-});
+const formSchema = z
+  .object({
+    name: z.string({ required_error: "Name is required" }),
+    email: z.string().email(),
+  })
+  .and(passwordMatchSchema);
 
-export default function LoginRegisterPage() {
+export default function RegisterPage() {
+  const form = useForm<z.infer<typeof formSchema>>();
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-    // Here you would typically send the data to your backend
-    // TODO:
-  };
+  const onSubmit = (data: z.infer<typeof formSchema>) => {};
 
   return (
     <div className='min-h-screen bg-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
       <Card className='w-full max-w-md'>
         <CardHeader>
           <CardTitle className='text-2xl font-bold text-center text-green-800'>
-            Login
+            Register
           </CardTitle>
           <CardDescription className='text-center'>
             Your sustainable auction marketplace
@@ -101,7 +94,7 @@ export default function LoginRegisterPage() {
                           <Input
                             {...field}
                             type={showPassword ? "text" : "password"}
-                            placeholder='Enter your email'
+                            placeholder='Password'
                             className='pl-10'
                           />
                           <button
@@ -122,6 +115,39 @@ export default function LoginRegisterPage() {
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name='passwordConfirm'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <div className='relative'>
+                          <Lock className='absolute left-2 top-2 h-5 w-5 text-gray-400' />
+                          <Input
+                            {...field}
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder='Confirm Password'
+                            className='pl-10'
+                          />
+                          <button
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
+                            className='absolute right-3 top-2 text-gray-400'
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className='w-5 h-5' />
+                            ) : (
+                              <Eye className='w-5 h-5' />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
                 <Button
                   type='submit'
                   className='mt-4 w-full bg-green-600 hover:bg-green-700'
@@ -135,9 +161,9 @@ export default function LoginRegisterPage() {
 
         <CardFooter className='flex-col'>
           <div className='text-muted-foreground text-sm'>
-            Don't have an account?{" "}
-            <Link href={"/register"} className='underline'>
-              Register
+            Already have a account?{" "}
+            <Link href={"/login"} className='underline'>
+              Login
             </Link>
           </div>
         </CardFooter>
