@@ -17,6 +17,8 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "../ui/button";
 import { LoginSchema } from "@/schemas";
+import { login } from "@/actions/login";
+import { FormError } from "../FormError";
 
 export const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -27,11 +29,21 @@ export const LoginForm = () => {
     },
   });
 
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {};
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    setError("");
+    setSuccess("");
+
+    startTransition(() => {
+      login(values).then((data) => {
+        setError(data?.error);
+      });
+    });
+  };
 
   return (
     <CardWrapper
@@ -101,7 +113,7 @@ export const LoginForm = () => {
               )}
             />
           </div>
-
+          <FormError message={error} />
           <Button
             type="submit"
             className="mt-4 w-full bg-green-600 hover:bg-green-700"

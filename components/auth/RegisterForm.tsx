@@ -17,6 +17,9 @@ import {
 import { Input } from "../ui/input";
 import { CardWrapper } from "./CardWrapper";
 import { RegisterSchema } from "@/schemas";
+import { register } from "@/actions/register";
+import { FormError } from "../FormError";
+import { FormSuccess } from "../FormSuccess";
 
 const registerFormSchema = z
   .object({
@@ -40,9 +43,21 @@ export const RegisterForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {};
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    setError("");
+    setSuccess("");
+
+    startTransition(() => {
+      register(values).then((data) => {
+        setError(data?.error);
+        setSuccess(data?.success);
+      });
+    });
+  };
   return (
     <CardWrapper
       headerLabel="Register"
@@ -164,10 +179,14 @@ export const RegisterForm = () => {
                       </button>
                     </div>
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
+          <FormError message={error} />
+          <FormSuccess message={success} />
           <Button
             type="submit"
             className="mt-4 w-full bg-green-600 hover:bg-green-700"
