@@ -15,7 +15,7 @@ datasource db {
 
 // Next-Auth standrad authication with provider
 model User {
-  id                       Int       @id @default(autoincrement())
+  id                       String    @id @default(cuid())
   name                     String?
   email                    String    @unique
   image                    String?
@@ -34,8 +34,8 @@ model User {
 }
 
 model Account {
-  id                Int     @id @default(autoincrement())
-  userId            Int
+  id                String  @id @default(cuid())
+  userId            String
   type              String
   provider          String
   providerAccountId String
@@ -53,9 +53,9 @@ model Account {
 }
 
 model Session {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       Int
+  userId       String
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -72,22 +72,22 @@ model VerificationToken {
 // Project Schema
 
 model Address {
-  id      Int    @id @default(autoincrement())
+  id      String @id @default(cuid())
   street  String
   city    String
   state   String
   country String
   zipCode String
-  userId  Int    @unique
+  userId  String @unique
   User    User   @relation(fields: [userId], references: [id])
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(cuid())
   title       String
   description String
   images      String[]
-  sellerId    Int
+  sellerId    String
   seller      User     @relation(fields: [sellerId], references: [id])
   category    String[]
   review      Review[]
@@ -96,8 +96,8 @@ model Product {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
-  productId Int?
+  id        String   @id @default(cuid())
+  productId String
   Product   Product? @relation(fields: [productId], references: [id])
   rating    Int
   comment   String?

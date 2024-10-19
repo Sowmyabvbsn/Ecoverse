@@ -6,6 +6,7 @@ import { Heart, Leaf, Menu, ShoppingCart, User, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
+import { logout } from "@/app/(auth)/register/actions";
 
 const Header = () => {
   const dispatch = useAppDispatch();
@@ -36,66 +37,67 @@ const Header = () => {
 
   return (
     <div>
-      <header className='bg-green-50 py-4 relative z-20'>
-        <div className='container mx-auto px-4 flex items-center justify-between'>
-          <Link href='/' className='flex items-center space-x-2'>
-            <Leaf className='h-8 w-8 text-green-600' />
-            <span className='text-2xl font-bold text-green-600'>EcoBid</span>
+      <header className="bg-green-50 py-4 relative z-20">
+        <div className="container mx-auto px-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center space-x-2">
+            <Leaf className="h-8 w-8 text-green-600" />
+            <span className="text-2xl font-bold text-green-600">EcoBid</span>
           </Link>
-          <nav className='hidden md:flex space-x-4'>
-            <Link href='/' className='text-green-800 hover:text-green-600'>
+          <nav className="hidden md:flex space-x-4">
+            <Link href="/" className="text-green-800 hover:text-green-600">
               Home
             </Link>
             <Link
-              href='/auctions'
-              className='text-green-800 hover:text-green-600'
+              href="/auctions"
+              className="text-green-800 hover:text-green-600"
             >
               Auctions
             </Link>
             <Link
-              href='/eco-sellers'
-              className='text-green-800 hover:text-green-600'
+              href="/eco-sellers"
+              className="text-green-800 hover:text-green-600"
             >
               Eco-Sellers
             </Link>
             <Link
-              href='/subscriptions'
-              className='text-green-800 hover:text-green-600'
+              href="/subscriptions"
+              className="text-green-800 hover:text-green-600"
             >
               Subscriptions
             </Link>
-            <Link href='/about' className='text-green-800 hover:text-green-600'>
+            <Link href="/about" className="text-green-800 hover:text-green-600">
               About
             </Link>
           </nav>
-          <div className='flex items-center space-x-4'>
+          <div className="flex items-center space-x-4">
+            <Button onClick={() => logout()}>Logout</Button>
             <Link
-              href='/login'
-              className='text-green-800 hover:text-green-600 hidden md:inline-block'
+              href="/login"
+              className="text-green-800 hover:text-green-600 hidden md:inline-block"
             >
               Sign In
             </Link>
             <Link
-              href='/profile'
-              className='text-green-800 hover:text-green-600'
+              href="/profile"
+              className="text-green-800 hover:text-green-600"
             >
-              <User className='h-6 w-6' />
+              <User className="h-6 w-6" />
             </Link>
             <Link
-              href='/wishlist'
-              className='text-green-800 hover:text-green-600'
+              href="/wishlist"
+              className="text-green-800 hover:text-green-600"
             >
-              <Heart className='h-6 w-6' />
+              <Heart className="h-6 w-6" />
             </Link>
-            <Link href='/cart' className='text-green-800 hover:text-green-600'>
-              <ShoppingCart className='h-6 w-6' />
+            <Link href="/cart" className="text-green-800 hover:text-green-600">
+              <ShoppingCart className="h-6 w-6" />
             </Link>
             <Button
-              variant='ghost'
-              className='md:hidden'
+              variant="ghost"
+              className="md:hidden"
               onClick={handleToggleMenu}
             >
-              <Menu className='h-6 w-6' />
+              <Menu className="h-6 w-6" />
             </Button>
           </div>
         </div>
@@ -107,43 +109,43 @@ const Header = () => {
         } transition-transform duration-300 ease-in-out md:hidden`}
         ref={menuRef}
       >
-        <div className='flex justify-between items-center p-4 border-b border-green-200'>
-          <span className='text-xl font-bold text-green-600'>Menu</span>
-          <Button variant='ghost' onClick={handleToggleMenu}>
-            <X className='h-6 w-6' />
+        <div className="flex justify-between items-center p-4 border-b border-green-200">
+          <span className="text-xl font-bold text-green-600">Menu</span>
+          <Button variant="ghost" onClick={handleToggleMenu}>
+            <X className="h-6 w-6" />
           </Button>
         </div>
-        <nav className='flex flex-col p-4'>
-          <Link href='/' className='text-green-800 hover:text-green-600 py-2'>
+        <nav className="flex flex-col p-4">
+          <Link href="/" className="text-green-800 hover:text-green-600 py-2">
             Home
           </Link>
           <Link
-            href='/auctions'
-            className='text-green-800 hover:text-green-600 py-2'
+            href="/auctions"
+            className="text-green-800 hover:text-green-600 py-2"
           >
             Auctions
           </Link>
           <Link
-            href='/eco-sellers'
-            className='text-green-800 hover:text-green-600 py-2'
+            href="/eco-sellers"
+            className="text-green-800 hover:text-green-600 py-2"
           >
             Eco-Sellers
           </Link>
           <Link
-            href='/subscriptions'
-            className='text-green-800 hover:text-green-600 py-2'
+            href="/subscriptions"
+            className="text-green-800 hover:text-green-600 py-2"
           >
             Subscriptions
           </Link>
           <Link
-            href='/about'
-            className='text-green-800 hover:text-green-600 py-2'
+            href="/about"
+            className="text-green-800 hover:text-green-600 py-2"
           >
             About
           </Link>
           <Link
-            href='/signin'
-            className='text-green-800 hover:text-green-600 py-2'
+            href="/signin"
+            className="text-green-800 hover:text-green-600 py-2"
           >
             Sign In
           </Link>
