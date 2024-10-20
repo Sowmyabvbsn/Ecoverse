@@ -9,6 +9,5 @@ export const register = async (provider: string) => {
 };
 
 export const logout = async () => {
-  await signOut({ redirectTo: "/" });
-  revalidatePath("/");
+  await signOut({ redirectTo: "/login" });
 };

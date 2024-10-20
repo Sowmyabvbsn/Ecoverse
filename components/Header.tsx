@@ -70,7 +70,9 @@ const Header = () => {
             </Link>
           </nav>
           <div className="flex items-center space-x-4">
-            <Button onClick={() => logout()}>Logout</Button>
+            <form action={logout}>
+              <Button type="submit">Logout</Button>
+            </form>
             <Link
               href="/login"
               className="text-green-800 hover:text-green-600 hidden md:inline-block"
