@@ -2,10 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface uiState {
   isMenuOpen: boolean;
+  isProductModal: boolean;
 }
 
 const initialState: uiState = {
   isMenuOpen: false,
+  isProductModal: false,
 };
 
 const uiSlice = createSlice({
@@ -21,8 +23,12 @@ const uiSlice = createSlice({
     openMenu: (state) => {
       state.isMenuOpen = true;
     },
+    toggleProductModal: (state) => {
+      state.isProductModal = !state.isProductModal;
+    },
   },
 });
 
-export const { toggleMenu, closeMenu, openMenu } = uiSlice.actions;
+export const { toggleMenu, closeMenu, openMenu, toggleProductModal } =
+  uiSlice.actions;
 export default uiSlice.reducer;
