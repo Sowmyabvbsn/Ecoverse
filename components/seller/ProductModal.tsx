@@ -1,33 +1,125 @@
+import { toggleProductModal } from "@/features/ui/uiSlice";
+import useProduct from "@/hooks/useProducts";
 import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
+import { productSchema } from "@/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlignEndVertical,
+  Biohazard,
+  OrigamiIcon,
+  RecycleIcon,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { MultiSelect } from "../MultiSelect";
 import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { toggleProductModal } from "@/features/ui/uiSlice";
+
+const categories = [
+  { value: "recycled", label: "Recycled", icon: RecycleIcon },
+  { value: "organic", label: "Organic", icon: OrigamiIcon },
+  { value: "fairtrade", label: "Fair Trade", icon: Biohazard },
+  {
+    value: "energy-efficient",
+    label: "Energy Efficient",
+    icon: AlignEndVertical,
+  },
+];
 
 export const ProductModal = () => {
+  const { data: session } = useSession();
+  const { createProduct } = useProduct();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.ui.isProductModal);
+  const form = useForm<z.infer<typeof productSchema>>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      category: [],
+      images: [],
+      price: 0,
+      stocks: 0,
+    },
+  });
+
+  const [isPending, startTransition] = useTransition();
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
 
   const handleProductModal = () => {
     dispatch(toggleProductModal());
   };
 
+  const onSubmit = async (values: z.infer<typeof productSchema>) => {
+    console.log(values);
+    try {
+      startTransition(async () => {
+        const uploadPromises = values.images.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file); // No need for file[0] if file is already a File object
+          formData.append(
+            "upload_preset",
+            process.env.NEXT_PUBLIC_CLOUDINARY_UNSIGNED!
+          );
+          formData.append(
+            "cloud_name",
+            process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
+          );
+
+          const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error("Upload failed");
+          }
+
+          return res.json(); // Return the response
+        });
+
+        const results = await Promise.all(uploadPromises); // Wait for all uploads
+        console.log(results); // Array of responses
+
+        if (session?.user?.id) {
+          await createProduct({
+            ...values,
+            images: results.map((img) => img.url),
+            sellerId: session.user.id,
+            price: Number(values.price),
+            stocks: Number(values.stocks),
+            category: selectedCategory,
+          });
+          handleProductModal();
+        } else {
+          throw "Seller Not found";
+        }
+      });
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    }
+  };
   return (
     <Dialog open={isOpen} onOpenChange={handleProductModal}>
       <DialogContent>
@@ -37,65 +129,158 @@ export const ProductModal = () => {
             Enter the details of the new product and set up the auction.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center justify-between gap-4">
-            <Label htmlFor="name">Product Name</Label>
-            <Input
-              id="name"
-              className="col-span-3"
-              placeholder="Enter Product Name"
+        <Form {...form}>
+          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormLabel htmlFor="title">Product Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="title"
+                      type="text"
+                      className="col-span-3"
+                      placeholder="Enter Product Name"
+                      disabled={isPending}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center  gap-4">
-            <Label htmlFor="minBid">Description</Label>
-            <Textarea
-              placeholder="Type your Description of the products."
-              className="col-span-3 resize-none"
-              rows={5}
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormLabel htmlFor="description">Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      id="description"
+                      placeholder="Type your Description of the products."
+                      disabled={isPending}
+                      className="col-span-3 resize-none"
+                      rows={5}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="images">Images</Label>
-            <Input id="images" type="file" className="col-span-3" multiple />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="price">Price ₹</Label>
-            <Input
-              id="price"
-              type="number"
-              className="col-span-3"
-              placeholder="Enter reasonable price"
+
+            <FormField
+              control={form.control}
+              name="images"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormLabel htmlFor="images">Images</FormLabel>
+                  <FormControl>
+                    <Input
+                      id="images"
+                      type="file"
+                      className="col-span-3"
+                      multiple
+                      onChange={(e) => {
+                        const files = e.target.files
+                          ? Array.from(e.target.files)
+                          : [];
+                        field.onChange(files); // Set files array in form
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="category">Category</Label>
-            <Select>
-              <SelectTrigger className="col-span-3" id="category">
-                <SelectValue placeholder="Select Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recycled">Recycled</SelectItem>
-                <SelectItem value="organic">Organic</SelectItem>
-                <SelectItem value="fairtrade">Fair Trade</SelectItem>
-                <SelectItem value="energy-efficient">
-                  Energy Efficient
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="stocks">Stocks</Label>
-            <Input
-              id="stocks"
-              type="number"
-              className="col-span-3"
-              placeholder="Enter number od stocks available"
+
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center gap-4">
+                  <FormLabel htmlFor="price">Price</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="price"
+                      type="number"
+                      className="col-span-3"
+                      placeholder="Enter reasonable price"
+                      disabled={isPending}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Add Product</Button>
-        </DialogFooter>
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center  gap-4">
+                  <FormLabel htmlFor="stocks">Category</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      {...field}
+                      className="col-span-3"
+                      options={categories}
+                      onValueChange={setSelectedCategory}
+                      defaultValue={selectedCategory}
+                      placeholder="Select Categories"
+                      disabled={isPending}
+                      variant="inverted"
+                      animation={2}
+                      maxCount={3}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {/* <div className="grid grid-cols-4 items-center gap-4">
+              <Label>Category</Label>
+              <MultiSelect
+                className="col-span-3"
+                options={categories}
+                onValueChange={setSelectedCategory}
+                defaultValue={selectedCategory}
+                placeholder="Select frameworks"
+                disabled ={ isPending}
+                variant="inverted"
+                animation={2}
+                maxCount={3}
+              />
+            </div> */}
+
+            <FormField
+              control={form.control}
+              name="stocks"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-4 items-center  gap-4">
+                  <FormLabel htmlFor="stocks">Stocks ₹</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="stocks"
+                      type="number"
+                      className="col-span-3"
+                      placeholder="Enter number of stocks available"
+                      disabled={isPending}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="mt-4 w-full">
+              {isPending ? "Loading..." : "Add Product"}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

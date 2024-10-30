@@ -31,6 +31,7 @@ model User {
   sessions                 Session[] // Add relation to Session
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
+  Review                   Review[]
 }
 
 model Account {
@@ -90,6 +91,8 @@ model Product {
   sellerId    String
   seller      User     @relation(fields: [sellerId], references: [id])
   category    String[]
+  price       Int
+  stocks      Int
   review      Review[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -97,6 +100,8 @@ model Product {
 
 model Review {
   id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   productId String
   Product   Product? @relation(fields: [productId], references: [id])
   rating    Int

@@ -7,14 +7,14 @@ import { getUserByEmail } from "./data/user";
 import { LoginSchema } from "./schemas";
 
 export default {
-  // callbacks: {
-  //   async session({ session, token }) {
-  //     if (session.user) {
-  //       session.user.id = token.sub || ""; // Add user ID to the session
-  //     }
-  //     return session;
-  //   },
-  // },
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub || ""; // Add user ID to the session
+      }
+      return session;
+    },
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

@@ -1,14 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface IProduct {
-  id: number;
-  name: string;
-  image: string;
+  id?: number;
+  title: string;
+  description: string;
+  images: string[];
+  sellerId: string;
   price: number;
+  rating?: number;
+  category: string[];
+  review?: IReview[];
+  stocks: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface IReview {
+  id: string;
+  userId: string;
+  productId: string;
   rating: number;
-  numReviews: number;
-  certifications: string[];
-  seller?: string;
+  comment?: string;
+  createdAt: Date;
 }
 
 interface FilterState {
@@ -45,7 +58,7 @@ const productSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    setProducts(state, action: PayloadAction<ProductState["products"]>) {
+    setProducts(state, action: PayloadAction<IProduct[]>) {
       state.products = action.payload;
     },
     setCurrentPage(state, action: PayloadAction<ProductState["currentPage"]>) {

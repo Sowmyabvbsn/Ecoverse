@@ -3,9 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { title, description, images, sellerId, category } = await req.json();
+    const { title, description, images, sellerId, category, price, stocks } =
+      await req.json();
 
-    if (!title || !description || !images || !sellerId || !category) {
+    if (
+      !title ||
+      !description ||
+      !images ||
+      !sellerId ||
+      !category ||
+      !price ||
+      !stocks
+    ) {
       return NextResponse.json({ error: "All fields are required" });
     }
 
@@ -14,6 +23,8 @@ export const POST = async (req: NextRequest) => {
         title,
         description,
         images,
+        price,
+        stocks,
         sellerId,
         category,
         createdAt: new Date(Date.now()),
