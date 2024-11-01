@@ -32,6 +32,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { uploadMultipleFile } from "@/lib/utils";
 
 const categories = [
   { value: "recycled", label: "Recycled", icon: RecycleIcon },
@@ -72,35 +73,9 @@ export const ProductModal = () => {
     console.log(values);
     try {
       startTransition(async () => {
-        const uploadPromises = values.images.map(async (file) => {
-          const formData = new FormData();
-          formData.append("file", file); // No need for file[0] if file is already a File object
-          formData.append(
-            "upload_preset",
-            process.env.NEXT_PUBLIC_CLOUDINARY_UNSIGNED!
-          );
-          formData.append(
-            "cloud_name",
-            process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
-          );
-
-          const res = await fetch(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
-
-          if (!res.ok) {
-            throw new Error("Upload failed");
-          }
-
-          return res.json(); // Return the response
-        });
+        const uploadPromises = uploadMultipleFile(values.images);
 
         const results = await Promise.all(uploadPromises); // Wait for all uploads
-        console.log(results); // Array of responses
 
         if (session?.user?.id) {
           await createProduct({
