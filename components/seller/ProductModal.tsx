@@ -64,16 +64,16 @@ export const ProductModal = () => {
 
   const [isPending, startTransition] = useTransition();
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const handleProductModal = () => {
     dispatch(toggleProductModal());
   };
 
   const onSubmit = async (values: z.infer<typeof productSchema>) => {
-    console.log(values);
     try {
       startTransition(async () => {
-        const uploadPromises = uploadMultipleFile(values.images);
+        const uploadPromises = uploadMultipleFile(selectedImages);
 
         const results = await Promise.all(uploadPromises); // Wait for all uploads
 

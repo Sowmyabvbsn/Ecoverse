@@ -13,7 +13,6 @@ const useProduct = () => {
       });
 
       const newProduct: IProduct = await response.json();
-      console.log(newProduct);
 
       dispatch(setProducts([...products, newProduct]));
     } catch (error) {}
