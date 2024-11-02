@@ -17,10 +17,13 @@ import {
   TableRow,
 } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { useAppDispatch } from "@/hooks/useReduxHooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import { toggleProductModal } from "@/features/ui/uiSlice";
+import useProduct from "@/hooks/useProducts";
+import { getSession, useSession } from "next-auth/react";
+import { useEffect } from "react";
 
-const products = [
+const productsDemo = [
   {
     id: 1,
     name: "Eco-Friendly Water Bottle",
@@ -51,7 +54,17 @@ const products = [
 ];
 
 export const ProductManagement = () => {
+  const { data: session } = useSession();
+  const { getSellerProducts } = useProduct();
   const dispatch = useAppDispatch();
+  const products = useAppSelector((state) => state.products.products);
+  console.log(products);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      getSellerProducts(session?.user?.id);
+    }
+  }, [session?.user?.id, getSellerProducts]);
 
   return (
     <div>
@@ -84,25 +97,23 @@ export const ProductManagement = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Current Bid</TableHead>
-            <TableHead>Buy Now</TableHead>
-            <TableHead>End Time</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Eco-Certifications</TableHead>
+            <TableHead>Product Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Stocks</TableHead>
+            <TableHead>Category</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {products.map((product) => (
             <TableRow key={product.id}>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>${product.currentBid}</TableCell>
-              <TableCell>${product.buyNow}</TableCell>
-              <TableCell>{product.endTime}</TableCell>
-              <TableCell>{product.status}</TableCell>
+              <TableCell>{product.title}</TableCell>
+              <TableCell>${product.description}</TableCell>
+              <TableCell>${product.price}</TableCell>
+              <TableCell>{product.stocks}</TableCell>
               <TableCell>
-                {product.ecoCertifications.map((cert, index) => (
+                {product.category.map((cert, index) => (
                   <Badge key={index} variant="secondary" className="mr-1">
                     {cert}
                   </Badge>

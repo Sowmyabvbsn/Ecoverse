@@ -7,9 +7,11 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { logout } from "@/app/(auth)/register/actions";
+import { useSession } from "next-auth/react";
 
 const Header = () => {
   const dispatch = useAppDispatch();
+  const { status } = useSession();
   const isMenuOpen = useAppSelector((state) => state.ui.isMenuOpen);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -70,15 +72,18 @@ const Header = () => {
             </Link>
           </nav>
           <div className="flex items-center space-x-4">
-            <form action={logout}>
-              <Button type="submit">Logout</Button>
-            </form>
-            <Link
-              href="/login"
-              className="text-green-800 hover:text-green-600 hidden md:inline-block"
-            >
-              Sign In
-            </Link>
+            {status === "authenticated" ? (
+              <form action={logout}>
+                <Button type="submit">Logout</Button>
+              </form>
+            ) : (
+              <Link
+                href="/login"
+                className="text-green-800 hover:text-green-600 hidden md:inline-block"
+              >
+                Sign In
+              </Link>
+            )}
             <Link
               href="/profile"
               className="text-green-800 hover:text-green-600"
