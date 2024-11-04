@@ -2,13 +2,13 @@ import { db } from "@/lib/db";
 import { useSession } from "next-auth/react";
 
 export const getUserByEmail = async (email: string) => {
-  console.log({ email });
-
+  console.log("getUserByEmail called with email:", email);
   try {
-    console.log("AAA");
     const user = await db.user.findUnique({ where: { email } });
+    console.log("User found:", user);
     return user;
   } catch (error) {
+    console.error("Error fetching user by email:", error);
     return null;
   }
 };

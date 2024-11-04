@@ -1,15 +1,19 @@
 "use client";
 
+import { logout } from "@/app/(auth)/register/actions";
 import { closeMenu, toggleMenu } from "@/features/ui/uiSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import { Heart, Leaf, Menu, ShoppingCart, User, X } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { Button } from "./ui/button";
-import { logout } from "@/app/(auth)/register/actions";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "./ui/button";
 
 const Header = () => {
+  const { data: session } = useSession();
+  const [userRole, setUserRole] = useState<string>();
+  console.log(userRole);
+
   const dispatch = useAppDispatch();
   const { status } = useSession();
   const isMenuOpen = useAppSelector((state) => state.ui.isMenuOpen);
@@ -18,6 +22,26 @@ const Header = () => {
   const handleToggleMenu = () => {
     dispatch(toggleMenu());
   };
+  useEffect(() => {
+    const email = session?.user?.email;
+    if (email) {
+      const fetchRole = async () => {
+        try {
+          const response = await fetch(`/api/user?email=${email}`);
+          const data = await response.json();
+
+          if (response.ok && data.role) {
+            setUserRole(data.role);
+          } else {
+            console.log("No role found in response:", data.error);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user role:", error);
+        }
+      };
+      fetchRole();
+    }
+  }, [session]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,24 +73,24 @@ const Header = () => {
             <Link href="/" className="text-green-800 hover:text-green-600">
               Home
             </Link>
-            <Link
+            {/* <Link
               href="/auctions"
               className="text-green-800 hover:text-green-600"
             >
               Auctions
-            </Link>
+            </Link> */}
             <Link
               href="/eco-sellers"
               className="text-green-800 hover:text-green-600"
             >
               Eco-Sellers
             </Link>
-            <Link
+            {/* <Link
               href="/subscriptions"
               className="text-green-800 hover:text-green-600"
             >
               Subscriptions
-            </Link>
+            </Link> */}
             <Link href="/about" className="text-green-800 hover:text-green-600">
               About
             </Link>
@@ -84,12 +108,20 @@ const Header = () => {
                 Sign In
               </Link>
             )}
-            <Link
-              href="/profile"
-              className="text-green-800 hover:text-green-600"
-            >
-              <User className="h-6 w-6" />
-            </Link>
+            {status === "authenticated" && (
+              <Link
+                href={
+                  userRole === "SELLER"
+                    ? "/seller/dashboard"
+                    : userRole === "ADMIN"
+                    ? "/admin/dashboard"
+                    : "/account"
+                }
+                className="text-green-800 hover:text-green-600"
+              >
+                <User className="h-6 w-6" />
+              </Link>
+            )}
             <Link
               href="/wishlist"
               className="text-green-800 hover:text-green-600"
@@ -126,36 +158,42 @@ const Header = () => {
           <Link href="/" className="text-green-800 hover:text-green-600 py-2">
             Home
           </Link>
-          <Link
+          {/* <Link
             href="/auctions"
             className="text-green-800 hover:text-green-600 py-2"
           >
             Auctions
-          </Link>
+          </Link> */}
           <Link
             href="/eco-sellers"
             className="text-green-800 hover:text-green-600 py-2"
           >
             Eco-Sellers
           </Link>
-          <Link
+          {/* <Link
             href="/subscriptions"
             className="text-green-800 hover:text-green-600 py-2"
           >
             Subscriptions
-          </Link>
+          </Link> */}
           <Link
             href="/about"
             className="text-green-800 hover:text-green-600 py-2"
           >
             About
           </Link>
-          <Link
-            href="/signin"
-            className="text-green-800 hover:text-green-600 py-2"
-          >
-            Sign In
-          </Link>
+          {status === "authenticated" ? (
+            <form action={logout}>
+              <Button type="submit">Logout</Button>
+            </form>
+          ) : (
+            <Link
+              href="/login"
+              className="text-green-800 hover:text-green-600 "
+            >
+              Sign In
+            </Link>
+          )}
         </nav>
       </div>
     </div>
