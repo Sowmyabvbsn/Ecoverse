@@ -12,7 +12,6 @@ import { Button } from "./ui/button";
 const Header = () => {
   const { data: session } = useSession();
   const [userRole, setUserRole] = useState<string>();
-  console.log(userRole);
 
   const dispatch = useAppDispatch();
   const { status } = useSession();
@@ -22,25 +21,20 @@ const Header = () => {
   const handleToggleMenu = () => {
     dispatch(toggleMenu());
   };
-  useEffect(() => {
-    const email = session?.user?.email;
-    if (email) {
-      const fetchRole = async () => {
-        try {
-          const response = await fetch(`/api/user?email=${email}`);
-          const data = await response.json();
 
-          if (response.ok && data.role) {
-            setUserRole(data.role);
-          } else {
-            console.log("No role found in response:", data.error);
-          }
-        } catch (error) {
-          console.error("Failed to fetch user role:", error);
-        }
-      };
-      fetchRole();
+  const fetchUserRole = async (email: string) => {
+    try {
+      const response = await fetch(`/api/user?email=${email}`);
+      const data = await response.json();
+      if (response.ok && data.role) setUserRole(data.role);
+      else console.log("No role found:", data.error);
+    } catch (error) {
+      console.error("Failed to fetch user role:", error);
     }
+  };
+
+  useEffect(() => {
+    if (session?.user?.email) fetchUserRole(session.user.email);
   }, [session]);
 
   useEffect(() => {
@@ -97,7 +91,12 @@ const Header = () => {
           </nav>
           <div className="flex items-center space-x-4">
             {status === "authenticated" ? (
-              <form action={logout}>
+              <form
+                action={async () => {
+                  await logout();
+                  window.location.assign(`${window.location.origin}/login`);
+                }}
+              >
                 <Button type="submit">Logout</Button>
               </form>
             ) : (
@@ -110,13 +109,7 @@ const Header = () => {
             )}
             {status === "authenticated" && (
               <Link
-                href={
-                  userRole === "SELLER"
-                    ? "/seller/dashboard"
-                    : userRole === "ADMIN"
-                    ? "/admin/dashboard"
-                    : "/account"
-                }
+                href={"/account"}
                 className="text-green-800 hover:text-green-600"
               >
                 <User className="h-6 w-6" />

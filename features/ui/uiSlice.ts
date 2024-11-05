@@ -1,13 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface uiState {
+interface UIState {
   isMenuOpen: boolean;
   isProductModal: boolean;
+  showLoading: boolean;
 }
 
-const initialState: uiState = {
+const initialState: UIState = {
   isMenuOpen: false,
   isProductModal: false,
+  showLoading: false,
 };
 
 const uiSlice = createSlice({
@@ -26,9 +28,17 @@ const uiSlice = createSlice({
     toggleProductModal: (state) => {
       state.isProductModal = !state.isProductModal;
     },
+    setShowLoading(state, actions: PayloadAction<UIState["showLoading"]>) {
+      state.showLoading = actions.payload;
+    },
   },
 });
 
-export const { toggleMenu, closeMenu, openMenu, toggleProductModal } =
-  uiSlice.actions;
+export const {
+  toggleMenu,
+  closeMenu,
+  openMenu,
+  toggleProductModal,
+  setShowLoading,
+} = uiSlice.actions;
 export default uiSlice.reducer;

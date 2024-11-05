@@ -4,6 +4,7 @@ import "./globals.css";
 import { ReduxProvider } from "./providers/ReduxProvider";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { Loader } from "@/components/Loader";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,11 +30,14 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <SessionProvider session={session}>
-      <html lang='en'>
+      <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <ReduxProvider>{children}</ReduxProvider>
+          <ReduxProvider>
+            {children}
+            <Loader />
+          </ReduxProvider>
         </body>
       </html>
     </SessionProvider>

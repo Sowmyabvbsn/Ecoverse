@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,9 +22,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Award, Mail, MapPin, Phone, User } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+
+import { useAppSelector } from "@/hooks/useReduxHooks";
+import useUser from "@/hooks/useUser";
 
 // Mock data
 const user = {
@@ -47,6 +53,12 @@ const savedItems = [
 ];
 
 export default function AccountPage() {
+  const { getLoginUser } = useUser();
+  const { data: session } = useSession();
+  const loggedInUser = useAppSelector((state) => state.users.loggedInUser);
+
+  console.log(loggedInUser);
+
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEdit = () => {
@@ -54,93 +66,102 @@ export default function AccountPage() {
     // Here you would typically update the user information in your backend
   };
 
-  return (
-    <div className='min-h-screen bg-green-50 py-8'>
-      <div className='container mx-auto px-4'>
-        <h1 className='text-3xl font-bold text-green-800 mb-8'>My Account</h1>
+  useEffect(() => {
+    if (session?.user?.email) {
+      getLoginUser(session.user.email);
+    }
+  }, [session]);
 
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-          <Card className='md:col-span-1'>
+  return (
+    <div className="min-h-screen bg-green-50 py-8">
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl font-bold text-green-800 mb-8">My Account</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="md:col-span-1">
             <CardHeader>
-              <CardTitle className='text-xl font-semibold'>
+              <CardTitle className="text-xl font-semibold">
                 Profile Information
               </CardTitle>
             </CardHeader>
-            <CardContent className='flex flex-col items-center'>
+            <CardContent className="flex flex-col items-center">
               <Image
-                src={user.avatar}
-                alt={user.name}
+                src={
+                  loggedInUser?.image ||
+                  "https://g-aeaz6ajxyxp.vusercontent.net/placeholder.svg"
+                }
+                alt={loggedInUser?.name || "Not Found"}
                 width={100}
                 height={100}
-                className='rounded-full mb-4'
+                className="rounded-full mb-4"
               />
-              <h2 className='text-2xl font-bold mb-2'>{user.name}</h2>
-              <p className='text-gray-600 mb-4'>{user.email}</p>
-              <div className='flex items-center space-x-2 text-green-600'>
-                <Award className='h-5 w-5' />
+              <h2 className="text-2xl font-bold mb-2">{loggedInUser?.name}</h2>
+              <p className="text-gray-600 mb-4">{loggedInUser?.email}</p>
+              <div className="flex items-center space-x-2 text-green-600">
+                <Award className="h-5 w-5" />
                 <span>{user.ecoPoints} Eco-Points</span>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleEdit} className='w-full'>
+              <Button onClick={handleEdit} className="w-full">
                 {isEditing ? "Save Changes" : "Edit Profile"}
               </Button>
             </CardFooter>
           </Card>
 
-          <Card className='md:col-span-2'>
+          <Card className="md:col-span-2">
             <CardHeader>
-              <CardTitle className='text-xl font-semibold'>
+              <CardTitle className="text-xl font-semibold">
                 Account Details
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form className='space-y-4'>
+              <form className="space-y-4">
                 <div>
-                  <Label htmlFor='name'>Full Name</Label>
-                  <div className='relative'>
-                    <User className='absolute left-3 top-3 h-5 w-5 text-gray-400' />
+                  <Label htmlFor="name">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                     <Input
-                      id='name'
-                      defaultValue={user.name}
-                      className='pl-10'
+                      id="name"
+                      defaultValue={loggedInUser?.name}
+                      className="pl-10"
                       disabled={!isEditing}
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor='email'>Email</Label>
-                  <div className='relative'>
-                    <Mail className='absolute left-3 top-3 h-5 w-5 text-gray-400' />
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                     <Input
-                      id='email'
-                      type='email'
-                      defaultValue={user.email}
-                      className='pl-10'
+                      id="email"
+                      type="email"
+                      defaultValue={loggedInUser?.email}
+                      className="pl-10"
                       disabled={!isEditing}
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor='phone'>Phone</Label>
-                  <div className='relative'>
-                    <Phone className='absolute left-3 top-3 h-5 w-5 text-gray-400' />
+                  <Label htmlFor="phone">Phone</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                     <Input
-                      id='phone'
-                      defaultValue={user.phone}
-                      className='pl-10'
+                      id="phone"
+                      defaultValue={user.phone || "None"}
+                      className="pl-10"
                       disabled={!isEditing}
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor='address'>Address</Label>
-                  <div className='relative'>
-                    <MapPin className='absolute left-3 top-3 h-5 w-5 text-gray-400' />
+                  <Label htmlFor="address">Address</Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                     <Input
-                      id='address'
+                      id="address"
                       defaultValue={user.address}
-                      className='pl-10'
+                      className="pl-10"
                       disabled={!isEditing}
                     />
                   </div>
@@ -150,12 +171,12 @@ export default function AccountPage() {
           </Card>
         </div>
 
-        <Tabs defaultValue='orders' className='mt-8'>
-          <TabsList className='grid w-full grid-cols-2'>
-            <TabsTrigger value='orders'>Order History</TabsTrigger>
-            <TabsTrigger value='saved'>Saved Items</TabsTrigger>
+        <Tabs defaultValue="orders" className="mt-8">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="orders">Order History</TabsTrigger>
+            <TabsTrigger value="saved">Saved Items</TabsTrigger>
           </TabsList>
-          <TabsContent value='orders'>
+          <TabsContent value="orders">
             <Card>
               <CardHeader>
                 <CardTitle>Order History</CardTitle>
@@ -187,7 +208,7 @@ export default function AccountPage() {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value='saved'>
+          <TabsContent value="saved">
             <Card>
               <CardHeader>
                 <CardTitle>Saved Items</CardTitle>
@@ -210,7 +231,7 @@ export default function AccountPage() {
                         <TableCell>{item.name}</TableCell>
                         <TableCell>${item.price.toFixed(2)}</TableCell>
                         <TableCell>
-                          <Button variant='outline' size='sm'>
+                          <Button variant="outline" size="sm">
                             View
                           </Button>
                         </TableCell>

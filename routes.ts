@@ -25,4 +25,4 @@ export const apiAuthPrefix = "/api";
     @type {string}
 */
 
-export const DEFAULT_LOGIN_REDIRECT = "/account";
+export const DEFAULT_LOGIN_REDIRECT = "/";
