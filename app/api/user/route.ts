@@ -22,3 +22,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Internal server error" });
   }
 }
+
+export async function PUT(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get("id");
+
+  if (!id || id !== "string") {
+    return NextResponse.json({ error: "Invalid user id" });
+  }
+
+  try {
+    const data = await req.json();
+    const updateUser = await db.user.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json({ updateUser });
+  } catch (error) {
+    return NextResponse.json({ error: "Internal server error" });
+  }
+}
