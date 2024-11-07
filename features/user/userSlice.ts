@@ -7,6 +7,7 @@ interface IUser {
   image: string;
   emailVerified: Date;
   password: string;
+  mobile: number;
   role: Role;
   ecoLoyaltyPoints?: number;
   carbonOffsetContribution?: number;

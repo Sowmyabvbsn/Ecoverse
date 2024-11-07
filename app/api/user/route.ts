@@ -11,8 +11,14 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const user = await db.user.findUnique({ where: { email } });
-
+    const user = await db.user.findUnique({
+      where: { email },
+      include: {
+        address: true,
+        Product: true,
+        Review: true,
+      },
+    });
     if (!user) {
       return NextResponse.json({ error: "User not found" });
     }

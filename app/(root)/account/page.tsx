@@ -23,12 +23,13 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Award, Mail, MapPin, Phone, User } from "lucide-react";
+import { Award } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 import { useAppSelector } from "@/hooks/useReduxHooks";
 import useUser from "@/hooks/useUser";
+import { useForm } from "react-hook-form";
 
 // Mock data
 const user = {
@@ -52,12 +53,22 @@ const savedItems = [
   { id: 3, name: "Organic Cotton T-Shirt", price: 30 },
 ];
 
+interface IForm {
+  name: string;
+  mobile: number | null;
+  address: {
+    street: string;
+    city: string;
+    country: string;
+    zipCode: string;
+  };
+}
+
 export default function AccountPage() {
   const { getLoginUser } = useUser();
   const { data: session } = useSession();
   const loggedInUser = useAppSelector((state) => state.users.loggedInUser);
-
-  console.log(loggedInUser);
+  const form = useForm<IForm>();
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -66,11 +77,13 @@ export default function AccountPage() {
     // Here you would typically update the user information in your backend
   };
 
+  const onSubmit = () => {};
+
   useEffect(() => {
-    if (session?.user?.email) {
+    if (session?.user?.email && !loggedInUser) {
       getLoginUser(session.user.email);
     }
-  }, [session]);
+  }, [session, loggedInUser, getLoginUser]);
 
   return (
     <div className="min-h-screen bg-green-50 py-8">
@@ -94,6 +107,8 @@ export default function AccountPage() {
                 width={100}
                 height={100}
                 className="rounded-full mb-4"
+                priority
+                // loading="lazy"
               />
               <h2 className="text-2xl font-bold mb-2">{loggedInUser?.name}</h2>
               <p className="text-gray-600 mb-4">{loggedInUser?.email}</p>
@@ -103,8 +118,13 @@ export default function AccountPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleEdit} className="w-full">
-                {isEditing ? "Save Changes" : "Edit Profile"}
+              <Button
+                onClick={handleEdit}
+                className={`w-full ${
+                  isEditing ? "bg-red-700 hover:bg-red-500" : ""
+                } `}
+              >
+                {isEditing ? "Cancel" : "Edit Profile"}
               </Button>
             </CardFooter>
           </Card>
@@ -116,56 +136,85 @@ export default function AccountPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <div>
                   <Label htmlFor="name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="name"
-                      defaultValue={loggedInUser?.name}
-                      className="pl-10"
-                      disabled={!isEditing}
-                    />
-                  </div>
+                  <Input
+                    id="name"
+                    defaultValue={loggedInUser?.name || ""}
+                    {...form.register("name")}
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      defaultValue={loggedInUser?.email}
-                      className="pl-10"
-                      disabled={!isEditing}
-                    />
-                  </div>
+                  <Input
+                    id="email"
+                    type="email"
+                    defaultValue={loggedInUser?.email}
+                    disabled
+                  />
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="phone"
-                      defaultValue={user.phone || "None"}
-                      className="pl-10"
-                      disabled={!isEditing}
-                    />
-                  </div>
+
+                  <Input
+                    id="phone"
+                    defaultValue={loggedInUser?.mobile || ""}
+                    {...form.register("mobile")}
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="address">Address</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-2 w-full">
                     <Input
-                      id="address"
-                      defaultValue={user.address}
-                      className="pl-10"
+                      id="street"
+                      className="col-span-1 md:col-span-3"
+                      defaultValue={loggedInUser?.address?.street || ""}
+                      {...form.register("address.street")}
                       disabled={!isEditing}
+                      placeholder="Street"
+                    />
+                    <Input
+                      id="city"
+                      defaultValue={loggedInUser?.address?.city || ""}
+                      {...form.register("address.city")}
+                      disabled={!isEditing}
+                      placeholder="City"
+                    />
+                    <Input
+                      id="country"
+                      defaultValue={loggedInUser?.address?.country || ""}
+                      {...form.register("address.country")}
+                      disabled={!isEditing}
+                      placeholder="Country"
+                    />
+                    <Input
+                      id="zipCode"
+                      defaultValue={loggedInUser?.address?.zipCode || ""}
+                      {...form.register("address.zipCode", {
+                        validate: (value) =>
+                          /^[A-Za-z0-9\s-]{3,10}$/.test(value) ||
+                          "Enter a valid zip code",
+                      })}
+                      disabled={!isEditing}
+                      placeholder="Zip code"
                     />
                   </div>
                 </div>
+                {isEditing && (
+                  <Button
+                    type="submit"
+                    className="w-full mt-4"
+                    // disabled={!hasChanges}
+                  >
+                    Save Changes
+                  </Button>
+                )}
               </form>
             </CardContent>
           </Card>
