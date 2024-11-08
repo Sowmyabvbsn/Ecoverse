@@ -32,19 +32,86 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
 
-  if (!id || id !== "string") {
-    return NextResponse.json({ error: "Invalid user id" });
+  // Validate the `id` parameter
+  if (!id || typeof id !== "string") {
+    console.error("Invalid or missing 'id' in query params:", id);
+    return NextResponse.json(
+      { error: "Invalid user id provided" },
+      { status: 400 }
+    );
+  }
+
+  // Parse and validate request body
+  let data;
+  try {
+    data = await req.json();
+  } catch (error) {
+    console.error("JSON parsing error:", error);
+    return NextResponse.json(
+      { error: "Invalid JSON data in request body" },
+      { status: 400 }
+    );
+  }
+
+  // Ensure that `mobile` is correctly parsed as an integer, if provided
+  if (
+    data.mobile &&
+    typeof data.mobile === "string" &&
+    /^\d+$/.test(data.mobile)
+  ) {
+    data.mobile = parseInt(data.mobile, 10);
   }
 
   try {
-    const data = await req.json();
-    const updateUser = await db.user.update({
+    // Ensure database connection
+    if (!db) {
+      console.error("Database connection issue: 'db' is undefined");
+      return NextResponse.json(
+        { error: "Database connection error" },
+        { status: 500 }
+      );
+    }
+
+    // Verify user existence
+    const existingUser = await db.user.findUnique({ where: { id } });
+    if (!existingUser) {
+      console.error(`User with ID ${id} not found`);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Prepare nested data update for `address`, if provided
+    const updateData = {
+      ...data,
+      ...(data.address && {
+        address: {
+          upsert: {
+            create: data.address,
+            update: data.address,
+          },
+        },
+      }),
+    };
+
+    // Update user data
+    const updatedUser = await db.user.update({
       where: { id },
-      data,
+      data: updateData,
     });
 
-    return NextResponse.json({ updateUser });
+    return NextResponse.json(
+      { message: "User updated successfully", updatedUser },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" });
+    console.error("Database update error:", error);
+
+    if (error?.code === "P2025") {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

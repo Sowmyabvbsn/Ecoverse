@@ -30,6 +30,7 @@ import Image from "next/image";
 import { useAppSelector } from "@/hooks/useReduxHooks";
 import useUser from "@/hooks/useUser";
 import { useForm } from "react-hook-form";
+import { IUser } from "@/features/user/userSlice";
 
 // Mock data
 const user = {
@@ -65,10 +66,10 @@ interface IForm {
 }
 
 export default function AccountPage() {
-  const { getLoginUser } = useUser();
+  const { getLoginUser, updateUser } = useUser();
   const { data: session } = useSession();
   const loggedInUser = useAppSelector((state) => state.users.loggedInUser);
-  const form = useForm<IForm>();
+  const form = useForm<IUser>();
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -77,7 +78,17 @@ export default function AccountPage() {
     // Here you would typically update the user information in your backend
   };
 
-  const onSubmit = () => {};
+  const onSubmit = (data: IUser) => {
+    try {
+      if (session?.user?.id) {
+        updateUser(data, session?.user?.id);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsEditing(false);
+    }
+  };
 
   useEffect(() => {
     if (session?.user?.email && !loggedInUser) {
