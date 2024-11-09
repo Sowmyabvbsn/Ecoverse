@@ -41,35 +41,15 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  // Parse and validate request body
-  let data;
   try {
-    data = await req.json();
-  } catch (error) {
-    console.error("JSON parsing error:", error);
-    return NextResponse.json(
-      { error: "Invalid JSON data in request body" },
-      { status: 400 }
-    );
-  }
+    let data = await req.json();
 
-  // Ensure that `mobile` is correctly parsed as an integer, if provided
-  if (
-    data.mobile &&
-    typeof data.mobile === "string" &&
-    /^\d+$/.test(data.mobile)
-  ) {
-    data.mobile = parseInt(data.mobile, 10);
-  }
-
-  try {
-    // Ensure database connection
-    if (!db) {
-      console.error("Database connection issue: 'db' is undefined");
-      return NextResponse.json(
-        { error: "Database connection error" },
-        { status: 500 }
-      );
+    if (
+      data.mobile &&
+      typeof data.mobile === "string" &&
+      /^\d+$/.test(data.mobile)
+    ) {
+      data.mobile = parseInt(data.mobile, 10);
     }
 
     // Verify user existence
@@ -85,8 +65,20 @@ export async function PUT(req: NextRequest) {
       ...(data.address && {
         address: {
           upsert: {
-            create: data.address,
-            update: data.address,
+            create: {
+              street: data.address.street,
+              city: data.address.city,
+              state: data.address.state,
+              country: data.address.country,
+              zipCode: data.address.zipCode,
+            },
+            update: {
+              street: data.address.street,
+              city: data.address.city,
+              state: data.address.state,
+              country: data.address.country,
+              zipCode: data.address.zipCode,
+            },
           },
         },
       }),
@@ -104,11 +96,6 @@ export async function PUT(req: NextRequest) {
     );
   } catch (error) {
     console.error("Database update error:", error);
-
-    if (error?.code === "P2025") {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
