@@ -93,6 +93,9 @@ export const ProductModal = () => {
       });
     } catch (error) {
       console.error("Error uploading images:", error);
+    } finally {
+      form.reset();
+      setSelectedCategory([]);
     }
   };
   return (
@@ -162,6 +165,7 @@ export const ProductModal = () => {
                         const files = e.target.files
                           ? Array.from(e.target.files)
                           : [];
+                        setSelectedImages(files);
                         field.onChange(files); // Set files array in form
                       }}
                     />
