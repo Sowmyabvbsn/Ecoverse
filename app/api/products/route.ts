@@ -54,9 +54,14 @@ export async function GET(req: NextRequest) {
   try {
     const sellerId = req.nextUrl.searchParams.get("sellerId"); // Get sellerId from query params if provided
 
-    const products = await db.product.findMany({
-      ...(sellerId && { where: { sellerId } }),
-    });
+    let products;
+    if (sellerId) {
+      products = await db.product.findMany({
+        ...(sellerId && { where: { sellerId } }),
+      });
+    } else {
+      products = await db.product.findMany();
+    }
 
     return NextResponse.json({ success: true, data: products });
   } catch (error) {

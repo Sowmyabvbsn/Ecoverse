@@ -1,6 +1,4 @@
-// pages/api/userByEmail.ts
 import { db } from "@/lib/db";
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -42,8 +40,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    let data = await req.json();
-
+    const data = await req.json();
     if (
       data.mobile &&
       typeof data.mobile === "string" &&

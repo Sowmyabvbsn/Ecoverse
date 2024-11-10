@@ -1,6 +1,13 @@
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { login } from "@/actions/login";
+import { LoginSchema } from "@/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { useState, useTransition } from "react";
+import { FormError } from "../FormError";
+import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
@@ -9,16 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { CardWrapper } from "./CardWrapper";
-import { passwordSchema } from "@/validation/passwordSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { useState, useTransition } from "react";
-import { Button } from "../ui/button";
-import { LoginSchema } from "@/schemas";
-import { login } from "@/actions/login";
-import { FormError } from "../FormError";
+import { CardWrapper } from "./CardWrapper";
 
 export const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -40,7 +39,11 @@ export const LoginForm = () => {
 
     startTransition(() => {
       login(values).then((data) => {
-        setError(data?.error);
+        if (data?.error) {
+          setError(data?.error);
+          return error;
+        }
+        window.location.assign(`${window.location.origin}`);
       });
     });
   };

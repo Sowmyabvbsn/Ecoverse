@@ -1,3 +1,6 @@
+import { toggleProductModal } from "@/features/ui/uiSlice";
+import useProduct from "@/hooks/useProducts";
+import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import {
   ChevronLeft,
   ChevronRight,
@@ -6,6 +9,9 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -16,12 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Badge } from "../ui/badge";
-import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
-import { toggleProductModal } from "@/features/ui/uiSlice";
-import useProduct from "@/hooks/useProducts";
-import { getSession, useSession } from "next-auth/react";
-import { useEffect } from "react";
 
 const productsDemo = [
   {
@@ -58,11 +58,10 @@ export const ProductManagement = () => {
   const { getSellerProducts } = useProduct();
   const dispatch = useAppDispatch();
   const products = useAppSelector((state) => state.products.products);
-  console.log(products);
 
   useEffect(() => {
     if (session?.user?.id) {
-      getSellerProducts(session?.user?.id);
+      getSellerProducts(session.user.id);
     }
   }, [session?.user?.id, getSellerProducts]);
 
@@ -105,30 +104,39 @@ export const ProductManagement = () => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {products.map((product) => (
-            <TableRow key={product.id}>
-              <TableCell>{product.title}</TableCell>
-              <TableCell>${product.description}</TableCell>
-              <TableCell>${product.price}</TableCell>
-              <TableCell>{product.stocks}</TableCell>
-              <TableCell>
-                {product.category.map((cert, index) => (
-                  <Badge key={index} variant="secondary" className="mr-1">
-                    {cert}
-                  </Badge>
-                ))}
-              </TableCell>
-              <TableCell>
-                <Button variant="ghost" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+          {products.length > 0 ? (
+            products.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell>{product.title}</TableCell>
+                <TableCell>{product.description}</TableCell>
+                <TableCell>₹ {product.price}</TableCell>
+                <TableCell>{product.stocks}</TableCell>
+                <TableCell>
+                  {product.category.map((cert, index) => (
+                    <Badge key={index} variant="secondary" className="mr-1">
+                      {cert}
+                    </Badge>
+                  ))}
+                </TableCell>
+                <TableCell>
+                  <Button variant="ghost" size="sm">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center">
+                No Products Available
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
       <div className="flex items-center justify-end space-x-2 mt-4">

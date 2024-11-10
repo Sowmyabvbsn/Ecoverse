@@ -1,6 +1,7 @@
 import { IProduct, setProducts } from "@/features/products/productSlice";
 import { useAppDispatch, useAppSelector } from "./useReduxHooks";
 import { useCallback } from "react";
+import { setShowLoading } from "@/features/ui/uiSlice";
 
 const useProduct = () => {
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ const useProduct = () => {
 
   const getSellerProducts = useCallback(async (sellerId: string) => {
     try {
+      dispatch(setShowLoading(true));
       const response = await fetch(
         `http://localhost:3000/api/products?sellerId=${sellerId}`
       );
@@ -31,6 +33,8 @@ const useProduct = () => {
       dispatch(setProducts(products.data));
     } catch (error) {
       console.log(error);
+    } finally {
+      dispatch(setShowLoading(false));
     }
   }, []);
 

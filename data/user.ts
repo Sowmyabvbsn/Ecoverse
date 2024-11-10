@@ -23,7 +23,12 @@ export const getUserById = async (id: string) => {
   }
 };
 
-export const loggedInUser = async () => {
-  const { data: session, status } = useSession();
-  return session;
+export const getUserRoleByID = async (id: string) => {
+  try {
+    const user = await db.user.findUnique({ where: { id } });
+
+    return user?.role;
+  } catch (error) {
+    return null;
+  }
 };

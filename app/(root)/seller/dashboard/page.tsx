@@ -5,10 +5,20 @@ import { ProductModal } from "@/components/seller/ProductModal";
 import { SalesOverview } from "@/components/seller/SalesOverview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Package } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 export default function SellerDashboard() {
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState("products");
+
+  if (session?.user.role !== "SELLER") {
+    return (
+      <div className="h-screen flex items-center justify-center text-2xl">
+        You don't have access to this page.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-green-50 py-8">

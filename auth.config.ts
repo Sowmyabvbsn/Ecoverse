@@ -1,16 +1,26 @@
+import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import bcrypt from "bcryptjs";
 
-import { getUserByEmail } from "./data/user";
+import { Role } from "@prisma/client";
+import { getUserByEmail, getUserRoleByID } from "./data/user";
 import { LoginSchema } from "./schemas";
 
 export default {
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        const userId = token.sub as string;
+        token.role = await getUserRoleByID(userId);
+      }
+
+      return token;
+    },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub || ""; // Add user ID to the session
+        session.user.role = token.role as Role;
       }
       return session;
     },

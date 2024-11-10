@@ -68,6 +68,8 @@ interface IForm {
 export default function AccountPage() {
   const { getLoginUser, updateUser } = useUser();
   const { data: session } = useSession();
+  console.log(session);
+
   const loggedInUser = useAppSelector((state) => state.users.loggedInUser);
   const form = useForm<IUser>();
 
