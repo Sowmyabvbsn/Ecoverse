@@ -23,24 +23,14 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Award } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
+import { IUser } from "@/features/user/userSlice";
 import { useAppSelector } from "@/hooks/useReduxHooks";
 import useUser from "@/hooks/useUser";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { IUser } from "@/features/user/userSlice";
-
-// Mock data
-const user = {
-  name: "Jane Doe",
-  email: "jane@example.com",
-  phone: "+1 234 567 8900",
-  address: "123 Eco Street, Green City, EC 12345",
-  avatar: "/placeholder.svg",
-  ecoPoints: 1500,
-};
 
 const orderHistory = [
   { id: "ORD001", date: "2023-06-01", total: 150, status: "Delivered" },
@@ -125,12 +115,12 @@ export default function AccountPage() {
               />
               <h2 className="text-2xl font-bold mb-2">{loggedInUser?.name}</h2>
               <p className="text-gray-600 mb-4">{loggedInUser?.email}</p>
-              <div className="flex items-center space-x-2 text-green-600">
+              {/* <div className="flex items-center space-x-2 text-green-600">
                 <Award className="h-5 w-5" />
                 <span>{user.ecoPoints} Eco-Points</span>
-              </div>
+              </div> */}
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-2">
               <Button
                 onClick={handleEdit}
                 className={`w-full ${
@@ -139,6 +129,14 @@ export default function AccountPage() {
               >
                 {isEditing ? "Cancel" : "Edit Profile"}
               </Button>
+              {session?.user.role === "SELLER" && (
+                <Button
+                  asChild
+                  className="w-full bg-green-700 hover:bg-green-600"
+                >
+                  <Link href={"seller/dashboard"}>Seller Board</Link>
+                </Button>
+              )}
             </CardFooter>
           </Card>
 

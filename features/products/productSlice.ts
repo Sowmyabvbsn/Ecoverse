@@ -32,6 +32,7 @@ interface FilterState {
 
 interface ProductState {
   products: IProduct[];
+  sellerProducts: IProduct[];
   currentPage: number;
   searchTerm: string;
   filters: FilterState;
@@ -41,6 +42,7 @@ interface ProductState {
 
 const initialState: ProductState = {
   products: [],
+  sellerProducts: [],
   currentPage: 1,
   searchTerm: "",
   filters: {
@@ -60,6 +62,9 @@ const productSlice = createSlice({
   reducers: {
     setProducts(state, action: PayloadAction<IProduct[]>) {
       state.products = action.payload;
+    },
+    setSellerProducts(state, action: PayloadAction<IProduct[]>) {
+      state.sellerProducts = action.payload;
     },
     setCurrentPage(state, action: PayloadAction<ProductState["currentPage"]>) {
       state.currentPage = action.payload;
@@ -94,6 +99,7 @@ const productSlice = createSlice({
 
 export const {
   setProducts,
+  setSellerProducts,
   setCurrentPage,
   setFilters,
   updateFilter,

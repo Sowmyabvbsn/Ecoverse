@@ -16,59 +16,59 @@ import {
 
 const ProductCard = ({
   id,
-  name,
-  image,
-  numReviews,
+  title,
+  images,
   price,
-  certifications,
+  category,
   rating,
 }: IProduct) => {
   const router = useRouter();
 
   return (
-    <Card className='flex flex-col'>
+    <Card className="flex flex-col">
       <CardHeader>
         <Image
-          src={image}
-          alt={name}
+          src={images[0]}
+          alt={title}
           width={400}
           height={200}
-          className='w-full h-48 object-cover rounded-t-lg'
+          loading="lazy"
+          className="w-full h-48 object-cover rounded-t-lg"
         />
       </CardHeader>
-      <CardContent className='flex-grow'>
-        <CardTitle className='text-xl mb-2'>{name}</CardTitle>
-        <p className='text-green-700 font-bold mb-2'>${price}</p>
-        <div className='flex items-center mb-2'>
+      <CardContent className="flex-grow">
+        <CardTitle className="text-xl mb-2">{title}</CardTitle>
+        <p className="text-green-700 font-bold mb-2">${price}</p>
+        <div className="flex items-center mb-2">
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
               className={`h-5 w-5 ${
-                i < Math.floor(rating)
+                i < Math.floor(4)
                   ? "text-yellow-400 fill-current"
                   : "text-gray-300"
               }`}
             />
           ))}
-          <span className='ml-2 text-xs text-gray-600'>
-            {rating.toFixed(1)} ({numReviews} reviews)
+          <span className="ml-2 text-xs text-gray-600">
+            {/* {rating.toFixed(1)} ({numReviews} reviews) */}
           </span>
         </div>
-        <div className='flex flex-wrap gap-1'>
-          {certifications.map((cert, index) => (
+        <div className="flex flex-wrap gap-1">
+          {category.map((cert, index) => (
             <span
               key={index}
-              className='bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded'
+              className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded"
             >
               {cert}
             </span>
           ))}
         </div>
       </CardContent>
-      <CardFooter className='mt-auto'>
+      <CardFooter className="mt-auto">
         <Button
           onClick={() => router.push(`/products/${id}`)}
-          className='w-full'
+          className="w-full"
         >
           View Details
         </Button>

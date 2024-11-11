@@ -57,8 +57,8 @@ export const ProductModal = () => {
       description: "",
       category: [],
       images: [],
-      price: 0,
-      stocks: 0,
+      price: undefined,
+      stocks: undefined,
     },
   });
 

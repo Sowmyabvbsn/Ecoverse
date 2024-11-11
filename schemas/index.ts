@@ -25,6 +25,6 @@ export const productSchema = z.object({
     z.string({ message: "At least one category must be selected" })
   ),
   images: z.array(z.instanceof(File)).min(1, "At least one image is required"),
-  price: z.number().min(1, "Price must be at least 1"),
-  stocks: z.number().min(1, "Stocks must be at least 1"),
+  price: z.number().min(1, "Price must be at least 1").optional(),
+  stocks: z.number().min(1, "Stocks must be at least 1").optional(),
 });

@@ -57,7 +57,7 @@ export const ProductManagement = () => {
   const { data: session } = useSession();
   const { getSellerProducts } = useProduct();
   const dispatch = useAppDispatch();
-  const products = useAppSelector((state) => state.products.products);
+  const products = useAppSelector((state) => state.products.sellerProducts);
 
   useEffect(() => {
     if (session?.user?.id) {
