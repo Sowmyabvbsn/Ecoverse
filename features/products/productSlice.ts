@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface IProduct {
-  id?: number;
+  id?: string;
   title: string;
   description: string;
   images: string[];
@@ -10,7 +10,7 @@ export interface IProduct {
   rating?: number;
   category: string[];
   review?: IReview[];
-  stocks: number;
+  stocks?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

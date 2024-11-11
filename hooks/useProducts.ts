@@ -4,7 +4,7 @@ import {
   setSellerProducts,
 } from "@/features/products/productSlice";
 import { useAppDispatch, useAppSelector } from "./useReduxHooks";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { setShowLoading } from "@/features/ui/uiSlice";
 
 const useProduct = () => {
@@ -13,6 +13,13 @@ const useProduct = () => {
     (state) => state.products.sellerProducts
   );
   const products = useAppSelector((state) => state.products.products);
+
+  const memoizedSellerProducts = useMemo(
+    () => sellerProducts,
+    [sellerProducts]
+  );
+
+  const memoizedProducts = useMemo(() => products, [products]);
 
   const createProduct = async (data: IProduct) => {
     try {
@@ -23,7 +30,7 @@ const useProduct = () => {
 
       const newProduct: IProduct = await response.json();
 
-      dispatch(setSellerProducts([...sellerProducts, newProduct]));
+      dispatch(setSellerProducts([...memoizedSellerProducts, newProduct]));
     } catch (error) {
       console.log(error);
     }
@@ -31,7 +38,7 @@ const useProduct = () => {
 
   const getSellerProducts = useCallback(
     async (sellerId: string) => {
-      if (sellerProducts && sellerProducts.length > 0) return;
+      if (memoizedSellerProducts && memoizedSellerProducts.length > 0) return;
       try {
         dispatch(setShowLoading(true));
         const response = await fetch(
@@ -46,11 +53,11 @@ const useProduct = () => {
         dispatch(setShowLoading(false));
       }
     },
-    [dispatch]
+    [dispatch, memoizedSellerProducts]
   );
 
   const getProducts = useCallback(async () => {
-    if (products && products.length > 0) return;
+    if (memoizedProducts && memoizedProducts.length > 0) return;
     try {
       dispatch(setShowLoading(true));
       const response = await fetch(`http://localhost:3000/api/products`);
@@ -62,9 +69,38 @@ const useProduct = () => {
     } finally {
       dispatch(setShowLoading(false));
     }
-  }, [dispatch]);
+  }, [dispatch, memoizedProducts]);
 
-  return { createProduct, getSellerProducts, getProducts };
+  const getProductByID = useCallback(
+    async (id: string) => {
+      const productExists = memoizedProducts.find(
+        (product) => product.id === id
+      );
+      if (productExists) {
+        return productExists;
+      }
+
+      try {
+        dispatch(setShowLoading(true));
+        const response = await fetch(
+          `http://localhost:3000/api/products/${id}`
+        );
+        const product = await response.json();
+
+        if (product.data) {
+          // dispatch(setProducts([...memoizedProducts, product.data]));
+          return product.data;
+        }
+      } catch (error) {
+        console.error("Error fetching single product:", error);
+      } finally {
+        dispatch(setShowLoading(false));
+      }
+    },
+    [dispatch, memoizedProducts]
+  );
+
+  return { createProduct, getSellerProducts, getProducts, getProductByID };
 };
 
 export default useProduct;
