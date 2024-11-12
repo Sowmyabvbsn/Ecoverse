@@ -4,11 +4,22 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import { productSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  AlignEndVertical,
-  Biohazard,
+  Briefcase,
+  Droplet,
+  Dumbbell,
+  Heart,
+  Home,
+  Leaf,
+  Lightbulb,
+  Monitor,
   OrigamiIcon,
-  RecycleIcon,
+  Pencil,
+  ShoppingBag,
+  TreeDeciduous,
+  UtensilsCrossed,
 } from "lucide-react";
+
+import { uploadMultipleFile } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -32,17 +43,21 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { uploadMultipleFile } from "@/lib/utils";
 
 const categories = [
-  { value: "recycled", label: "Recycled", icon: RecycleIcon },
-  { value: "organic", label: "Organic", icon: OrigamiIcon },
-  { value: "fairtrade", label: "Fair Trade", icon: Biohazard },
-  {
-    value: "energy-efficient",
-    label: "Energy Efficient",
-    icon: AlignEndVertical,
-  },
+  { value: "kitchen", label: "Kitchen", icon: UtensilsCrossed },
+  { value: "eco-friendly", label: "Eco-Friendly", icon: Leaf },
+  { value: "fashion", label: "Fashion", icon: ShoppingBag },
+  { value: "bags", label: "Bags", icon: Briefcase },
+  { value: "electronics", label: "Electronics", icon: Monitor },
+  { value: "personal-care", label: "Personal Care", icon: Heart },
+  { value: "home", label: "Home", icon: Home },
+  { value: "bath", label: "Bath", icon: Droplet },
+  { value: "outdoors", label: "Outdoors", icon: TreeDeciduous },
+  { value: "lighting", label: "Lighting", icon: Lightbulb },
+  { value: "fitness", label: "Fitness", icon: Dumbbell },
+  { value: "stationery", label: "Stationery", icon: Pencil },
+  { value: "cleaning", label: "Cleaning", icon: OrigamiIcon },
 ];
 
 export const ProductModal = () => {
