@@ -3,7 +3,7 @@
 import ProductCard from "@/components/Product/ProductCard";
 import ProductFilters from "@/components/Product/ProductFilters";
 import SearchFilter from "@/components/SearchFilter";
-import { IProduct, setSearchTerm } from "@/features/products/productSlice";
+import { setSearchTerm } from "@/features/products/productSlice";
 import useProduct from "@/hooks/useProducts";
 import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import { useEffect } from "react";

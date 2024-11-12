@@ -15,24 +15,26 @@ datasource db {
 
 // Next-Auth standrad authication with provider
 model User {
-  id                       String    @id @default(cuid())
+  id                       String     @id @default(cuid())
   name                     String?
-  email                    String    @unique
+  email                    String     @unique
   image                    String?
   emailVerified            DateTime?
   mobile                   Int?
   password                 String?
-  role                     Role      @default(BUYER)
-  ecoLoyaltyPoints         Int?      @default(0)
-  carbonOffsetContribution Float?    @default(0)
-  isEcoCertifiedSeller     Boolean?  @default(false)
+  role                     Role       @default(BUYER)
+  ecoLoyaltyPoints         Int?       @default(0)
+  carbonOffsetContribution Float?     @default(0)
+  isEcoCertifiedSeller     Boolean?   @default(false)
   address                  Address?
   Product                  Product[]
   accounts                 Account[] // Add relation to Account
   sessions                 Session[] // Add relation to Session
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
   Review                   Review[]
+  Cart                     Cart[]
+  Wishlist                 Wishlist[]
 }
 
 model Account {
@@ -85,18 +87,20 @@ model Address {
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   description String
   images      String[]
   sellerId    String
-  seller      User     @relation(fields: [sellerId], references: [id])
+  seller      User       @relation(fields: [sellerId], references: [id])
   category    String[]
   price       Int
   stocks      Int
   review      Review[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Cart        Cart[]
+  Wishlist    Wishlist[]
 }
 
 model Review {
@@ -108,6 +112,30 @@ model Review {
   rating    Int
   comment   String?
   createdAt DateTime @default(now())
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  price     Int
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  user      User     @relation(fields: [userId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
 }
 
 // Enum

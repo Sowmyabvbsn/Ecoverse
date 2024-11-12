@@ -53,17 +53,55 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const sellerId = req.nextUrl.searchParams.get("sellerId"); // Get sellerId from query params if provided
+    const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
+    const search = req.nextUrl.searchParams.get("search") || "";
 
-    let products;
-    if (sellerId) {
-      products = await db.product.findMany({
-        ...(sellerId && { where: { sellerId } }),
-      });
-    } else {
-      products = await db.product.findMany();
-    }
+    const skip = (page - 1) * limit;
 
-    return NextResponse.json({ success: true, data: products });
+    const products = await db.product.findMany({
+      where: {
+        ...(sellerId && { sellerId }),
+        ...(search && {
+          OR: [
+            { title: { contains: search, mode: "insensitive" } }, // Search in name
+            {
+              description: {
+                contains: search,
+                mode: "insensitive",
+              },
+            }, // Search in description
+          ],
+        }),
+      },
+      skip,
+      take: limit,
+    });
+
+    const totalItem = await db.product.count({
+      where: {
+        ...(sellerId && { sellerId }),
+        ...(search && {
+          OR: [
+            { title: { contains: search, mode: "insensitive" } }, // Search in name
+            {
+              description: {
+                contains: search,
+                mode: "insensitive",
+              },
+            }, // Search in description
+          ],
+        }),
+      },
+    });
+    const totalPage = Math.ceil(totalItem / limit);
+
+    return NextResponse.json({
+      success: true,
+      data: products,
+      totalPage,
+      totalItem,
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch products" },

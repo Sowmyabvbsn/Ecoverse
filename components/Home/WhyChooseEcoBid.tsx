@@ -1,5 +1,6 @@
 import { Globe, Leaf, Recycle, Zap } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
+import Image from "next/image";
 
 const contentData = [
   {
@@ -26,7 +27,16 @@ const contentData = [
 
 const WhyChooseEcoBid = () => {
   return (
-    <section className='relative bg-[url("/assets/eco-bid-banner-2.jpg")] bg-cover bg-center bg-no-repeat py-12 md:py-16'>
+    <section className="relative bg-cover bg-center bg-no-repeat py-12 md:py-16">
+      {/* Background Image */}
+      <Image
+        src="/assets/eco-bid-banner-2.jpg"
+        alt="Hero Image"
+        layout="fill"
+        objectFit="cover"
+        objectPosition="center"
+        priority
+      />
       {/* Black transparent overlay */}
       <div className="absolute inset-0 bg-black opacity-70 "></div>
 
