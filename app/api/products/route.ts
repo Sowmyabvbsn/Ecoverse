@@ -1,6 +1,4 @@
-import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { productSchema } from "@/schemas";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
