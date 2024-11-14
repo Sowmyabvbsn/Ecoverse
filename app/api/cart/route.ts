@@ -109,15 +109,20 @@ export async function GET(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get("id");
 
-    if (id) {
-      const carts = await db.cart.findMany({ where: { userId: id } });
-      return NextResponse.json({ success: true, data: carts }, { status: 200 });
+    if (!id) {
+      return NextResponse.json(
+        { error: "Provide User ID for user carts" },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(
-      { error: "Provide User ID for user carts" },
-      { status: 400 }
-    );
+    const carts = await db.cart.findMany({
+      where: { userId: id },
+      include: {
+        product: true,
+      },
+    });
+    return NextResponse.json({ success: true, data: carts }, { status: 200 });
   } catch (error) {
     console.error("Failed to fetch the cart", error);
     return NextResponse.json(

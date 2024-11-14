@@ -10,9 +10,8 @@ const HeroSection = () => {
       <Image
         src="/assets/eco-bid-banner.jpg"
         alt="Hero Image"
-        layout="fill"
-        objectFit="cover"
-        objectPosition="center"
+        fill
+        className="object-cover object-center"
         priority
       />
       {/* Black transparent overlay */}
