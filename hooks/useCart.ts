@@ -10,12 +10,14 @@ const useCart = () => {
   const memoizedCart = useMemo(() => carts, [carts]);
 
   const getCarts = useCallback(
-    async (id: string) => {
+    async (userId: string) => {
       if (memoizedCart && memoizedCart.length > 0) return;
       try {
         dispatch(setShowLoading(true));
 
-        const response = await fetch(`http://localhost:3000/api/cart?id=${id}`);
+        const response = await fetch(
+          `http://localhost:3000/api/cart?id=${userId}`
+        );
         const data = await response.json();
         dispatch(setCarts(data.data));
       } catch (error) {
@@ -26,6 +28,16 @@ const useCart = () => {
     },
     [dispatch, memoizedCart]
   );
+
+  const increaseQuantity = async (cartId: string, quantity: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/cart?id=${userId}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return { getCarts };
 };
