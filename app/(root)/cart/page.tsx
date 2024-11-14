@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import useCart from "@/hooks/useCart";
+import { useAppSelector } from "@/hooks/useReduxHooks";
 import { Leaf, Minus, Plus, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,28 +18,24 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
-import { useSession } from "next-auth/react";
-import useCart from "@/hooks/useCart";
-import { useAppSelector } from "@/hooks/useReduxHooks";
 
 export default function CartPage() {
   const { data: session } = useSession();
-  const { getCarts } = useCart();
+
+  const { getCarts, updateQuantity, deleteCart } = useCart();
   const carts = useAppSelector((state) => state.carts.cart);
 
-  const [cartItems, setCartItems] = useState(carts);
   const [carbonOffset, setCarbonOffset] = useState(0);
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(0, newQuantity) } : item
-      )
-    );
+  const handleIncrease = async (id: string, newQuantity: number) => {
+    await updateQuantity(id, newQuantity, "INCREASE");
+  };
+  const handleDecrease = async (id: string, newQuantity: number) => {
+    await updateQuantity(id, newQuantity, "DECREASE");
   };
 
-  const removeItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+  const removeItem = async (id: string) => {
+    await deleteCart(id);
   };
 
   const subTotal = carts.reduce(
@@ -51,8 +50,6 @@ export default function CartPage() {
       getCarts(session?.user.id);
     }
   }, [session?.user.id]);
-
-  console.log(carts);
 
   return (
     <div className="min-h-screen bg-green-50 py-8">
@@ -79,16 +76,17 @@ export default function CartPage() {
                         <div className="flex items-center">
                           <Image
                             src={item.product.images[0]}
-                            width={80}
-                            height={80}
+                            width={100}
+                            height={100}
+                            priority
                             alt={item.product.title}
-                            className="rounded-md mr-4"
+                            className="rounded-md mr-4 w-20 h-20 object-cover object-center"
                           />
 
                           <div className="flex-grow">
                             <h3 className="font-bold">{item.product.title}</h3>
                             <p className="text-green-600">
-                              {item.product.price.toFixed(2)}
+                              {item.price.toFixed(2)}
                             </p>
                           </div>
 
@@ -97,9 +95,9 @@ export default function CartPage() {
                               variant={"outline"}
                               size={"icon"}
                               onClick={() =>
-                                updateQuantity(
+                                handleDecrease(
                                   item.id,
-                                  (item.quantity ?? 1) - 1
+                                  (item.quantity ?? 0) - 1
                                 )
                               }
                             >
@@ -108,13 +106,7 @@ export default function CartPage() {
 
                             <Input
                               type="number"
-                              defaultValue={item.quantity}
-                              onChange={(e) =>
-                                updateQuantity(
-                                  item.id,
-                                  parseInt(e.target.value)
-                                )
-                              }
+                              value={item.quantity}
                               readOnly
                               className="w-16 text-center"
                             />
@@ -123,9 +115,9 @@ export default function CartPage() {
                               variant={"outline"}
                               size={"icon"}
                               onClick={() =>
-                                updateQuantity(
+                                handleIncrease(
                                   item.id,
-                                  (item.quantity ?? 1) - 1
+                                  (item.quantity ?? 0) + 1
                                 )
                               }
                             >

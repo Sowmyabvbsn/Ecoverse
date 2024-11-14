@@ -10,12 +10,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IProduct } from "@/features/products/productSlice";
+import useCart from "@/hooks/useCart";
 import useProduct from "@/hooks/useProducts";
 import { ArrowLeft, ShoppingCart, Star } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 const product = {
   id: 1,
@@ -51,18 +53,23 @@ const product = {
 };
 
 export default function ProductDetailsPage() {
+  const { data: session } = useSession();
   const { id } = useParams();
+  const { addToCart } = useCart();
+  const [pending, startTransition] = useTransition();
+
   const productId = Array.isArray(id) ? id[0] : id;
 
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number>(1);
   const [userRating, setUserRating] = useState(0);
   const { getProductByID } = useProduct();
   const [productData, setProductData] = useState<IProduct>();
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    setQuantity(isNaN(value) || value < 1 ? 1 : value);
+  const handleAdd = (userId: string, productId: string, quantity: number) => {
+    startTransition(async () => {
+      await addToCart(userId, productId, quantity);
+    });
   };
 
   const handleRating = (rating: number) => {
@@ -163,13 +170,26 @@ export default function ProductDetailsPage() {
                 type="number"
                 min="1"
                 value={quantity}
-                onChange={handleQuantityChange}
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
                 className="w-20"
               />
             </div>
-            <Button className="w-full mb-4" disabled={!product.inStock}>
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
+            <Button
+              className="w-full mb-4"
+              disabled={!product.inStock}
+              onClick={() =>
+                session?.user.id &&
+                handleAdd(session?.user.id, productId, quantity)
+              }
+            >
+              {pending ? (
+                "Loading..."
+              ) : (
+                <>
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  {product.inStock ? "Add to Cart" : "Out of Stock"}
+                </>
+              )}
             </Button>
 
             <Card>
