@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     let cartItem;
 
     if (existingCartItem) {
-      const newQuantity = existingCartItem.quantity + 1;
+      const newQuantity = existingCartItem.quantity + quantity;
 
       cartItem = await db.cart.update({
         where: {

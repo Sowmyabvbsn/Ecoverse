@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { useSession } from "next-auth/react";
 
 export const getUserByEmail = async (email: string) => {
   console.log("getUserByEmail called with email:", email);
@@ -19,7 +18,7 @@ export const getUserById = async (id: string) => {
 
     return user;
   } catch (error) {
-    return null;
+    return error;
   }
 };
 
@@ -29,6 +28,6 @@ export const getUserRoleByID = async (id: string) => {
 
     return user?.role;
   } catch (error) {
-    return null;
+    return error;
   }
 };
