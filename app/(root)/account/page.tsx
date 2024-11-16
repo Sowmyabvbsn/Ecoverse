@@ -44,17 +44,6 @@ const savedItems = [
   { id: 3, name: "Organic Cotton T-Shirt", price: 30 },
 ];
 
-interface IForm {
-  name: string;
-  mobile: number | null;
-  address: {
-    street: string;
-    city: string;
-    country: string;
-    zipCode: string;
-  };
-}
-
 export default function AccountPage() {
   const { getLoginUser, updateUser } = useUser();
   const { data: session } = useSession();

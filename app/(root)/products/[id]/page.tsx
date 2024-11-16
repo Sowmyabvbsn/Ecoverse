@@ -84,7 +84,7 @@ export default function ProductDetailsPage() {
         .then((data) => setProductData(data))
         .catch((error) => setErrorMessage(error.error));
     }
-  }, [productId]);
+  }, [getProductByID, productId]);
 
   if (!productData) {
     return (

@@ -6,13 +6,10 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useReduxHooks";
 import { Heart, Leaf, Menu, ShoppingCart, User, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 
 const Header = () => {
-  const { data: session } = useSession();
-  const [userRole, setUserRole] = useState<string>();
-
   const dispatch = useAppDispatch();
   const { status } = useSession();
   const isMenuOpen = useAppSelector((state) => state.ui.isMenuOpen);
@@ -21,21 +18,6 @@ const Header = () => {
   const handleToggleMenu = () => {
     dispatch(toggleMenu());
   };
-
-  const fetchUserRole = async (email: string) => {
-    try {
-      const response = await fetch(`/api/user?email=${email}`);
-      const data = await response.json();
-      if (response.ok && data.role) setUserRole(data.role);
-      else console.log("No role found:", data.error);
-    } catch (error) {
-      console.error("Failed to fetch user role:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (session?.user?.email) fetchUserRole(session.user.email);
-  }, [session]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

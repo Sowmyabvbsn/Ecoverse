@@ -49,7 +49,7 @@ export default function CartPage() {
     if (session?.user.id) {
       getCarts(session?.user.id);
     }
-  }, [session?.user.id]);
+  }, [getCarts, session?.user.id]);
 
   return (
     <div className="min-h-screen bg-green-50 py-8">

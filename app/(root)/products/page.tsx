@@ -20,7 +20,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [getProducts]);
 
   return (
     <div className="min-h-screen bg-green-50 py-8">

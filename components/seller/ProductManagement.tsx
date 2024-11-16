@@ -10,7 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -22,36 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-
-const productsDemo = [
-  {
-    id: 1,
-    name: "Eco-Friendly Water Bottle",
-    currentBid: 25,
-    buyNow: 50,
-    endTime: "2023-07-01",
-    status: "Active",
-    ecoCertifications: ["Recycled", "BPA-Free"],
-  },
-  {
-    id: 2,
-    name: "Bamboo Toothbrush Set",
-    currentBid: 15,
-    buyNow: 30,
-    endTime: "2023-06-30",
-    status: "Ended",
-    ecoCertifications: ["Biodegradable"],
-  },
-  {
-    id: 3,
-    name: "Solar Power Bank",
-    currentBid: 40,
-    buyNow: 80,
-    endTime: "2023-07-05",
-    status: "Active",
-    ecoCertifications: ["Energy Efficient"],
-  },
-];
 
 export const ProductManagement = () => {
   const { data: session } = useSession();

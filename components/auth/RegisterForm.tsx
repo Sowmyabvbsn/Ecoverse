@@ -1,4 +1,3 @@
-import { passwordMatchSchema } from "@/validation/passwordMatchSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail, PersonStanding } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -20,13 +19,6 @@ import { RegisterSchema } from "@/schemas";
 import { register } from "@/actions/register";
 import { FormError } from "../FormError";
 import { FormSuccess } from "../FormSuccess";
-
-const registerFormSchema = z
-  .object({
-    name: z.string({ required_error: "Name is required" }),
-    email: z.string().email(),
-  })
-  .and(passwordMatchSchema);
 
 export const RegisterForm = () => {
   const form = useForm<z.infer<typeof RegisterSchema>>({
