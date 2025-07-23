@@ -34,4 +34,30 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
 # EcoBid
+
+## Database Setup
+
+This project now uses MySQL instead of Prisma. To set up the database:
+
+1. Install MySQL on your system
+2. Create a database named `ecobid`
+3. Run the SQL schema file: `mysql -u root -p ecobid < lib/db-schema.sql`
+4. Update your `.env` file with MySQL connection details:
+   ```
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=root
+   MYSQL_PASSWORD=your_password
+   MYSQL_DATABASE=ecobid
+   ```
+
+## Features
+
+- MySQL database with connection pooling
+- User authentication with NextAuth.js
+- Product management
+- Shopping cart functionality
+- User profiles and addresses
+- Reviews and ratings

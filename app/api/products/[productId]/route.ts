@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getProductById, deleteProduct } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const product = await db.product.findUnique({ where: { id: productId } });
+    const product = await getProductById(productId);
 
     if (!product) {
       return NextResponse.json({ error: "Product not found", status: 404 });
@@ -37,9 +37,9 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const deleteProduct = await db.product.delete({ where: { id: productId } });
+    const deletedProduct = await deleteProduct(productId);
 
-    if (!deleteProduct) {
+    if (!deletedProduct) {
       return NextResponse.json(
         { error: "Product is not found" },
         { status: 404 }

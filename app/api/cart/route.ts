@@ -1,4 +1,10 @@
-import { db } from "@/lib/db";
+import { 
+  addToCart, 
+  getCartByUserId, 
+  updateCartQuantity, 
+  deleteCartItem,
+  getProductById 
+} from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 
@@ -20,58 +26,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existingCartItem = await db.cart.findUnique({
-      where: {
-        userId_productId: {
-          userId,
-          productId,
-        },
-      },
-    });
-
-    let cartItem;
-
-    if (existingCartItem) {
-      const newQuantity = existingCartItem.quantity + quantity;
-
-      cartItem = await db.cart.update({
-        where: {
-          userId_productId: {
-            userId,
-            productId,
-          },
-        },
-        data: {
-          quantity: newQuantity,
-        },
-      });
-    } else {
-      //  check product is present or not
-      const product = await db.product.findUnique({
-        where: {
-          id: productId,
-        },
-        select: {
-          price: true,
-        },
-      });
-
-      if (!product) {
-        return NextResponse.json(
-          { error: "Product was not found!" },
-          { status: 404 }
-        );
-      }
-
-      cartItem = await db.cart.create({
-        data: {
-          userId,
-          productId,
-          quantity,
-          price: product.price,
-        },
-      });
+    // Check if product exists
+    const product = await getProductById(productId);
+    if (!product) {
+      return NextResponse.json(
+        { error: "Product was not found!" },
+        { status: 404 }
+      );
     }
+
+    const cartItem = await addToCart(userId, productId, quantity);
 
     return NextResponse.json(
       {
@@ -105,12 +69,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const carts = await db.cart.findMany({
-      where: { userId: id },
-      include: {
-        product: true,
-      },
-    });
+    const carts = await getCartByUserId(id);
     return NextResponse.json({ success: true, data: carts }, { status: 200 });
   } catch (error) {
     console.error("Failed to fetch the cart", error);
@@ -138,42 +97,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const existingCartItem = await db.cart.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!existingCartItem) {
-      return NextResponse.json(
-        { error: "Item not found in cart" },
-        { status: 404 }
-      );
-    }
-
-    if (quantity <= 0) {
-      await db.cart.delete({
-        where: {
-          id,
-        },
-      });
-      return NextResponse.json(
-        {
-          success: true,
-          message: "Item removed from cart",
-        },
-        { status: 200 }
-      );
-    }
-
-    const updateCartItem = await db.cart.update({
-      where: {
-        id,
-      },
-      data: {
-        quantity,
-      },
-    });
+    const updateCartItem = await updateCartQuantity(id, quantity);
 
     return NextResponse.json(
       {
@@ -206,20 +130,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const existingCartItem = await db.cart.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!existingCartItem) {
-      return NextResponse.json(
-        { error: "Item not found in cart" },
-        { status: 404 }
-      );
-    }
-
-    await db.cart.delete({ where: { id } });
+    await deleteCartItem(id);
 
     return NextResponse.json(
       { success: true, message: "Item delete successfully" },

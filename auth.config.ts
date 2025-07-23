@@ -2,8 +2,6 @@ import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-
-import { Role } from "@prisma/client";
 import { getUserByEmail, getUserRoleByID } from "./data/user";
 import { LoginSchema } from "./schemas";
 
@@ -20,7 +18,7 @@ export default {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub || ""; // Add user ID to the session
-        session.user.role = token.role as Role;
+        session.user.role = token.role as string;
       }
       return session;
     },

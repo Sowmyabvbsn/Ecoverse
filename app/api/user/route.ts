@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getUserByEmail, getUserById, updateUser } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -9,14 +9,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const user = await db.user.findUnique({
-      where: { email },
-      include: {
-        address: true,
-        Product: true,
-        Review: true,
-      },
-    });
+    const user = await getUserByEmail(email);
     if (!user) {
       return NextResponse.json({ error: "User not found" });
     }
@@ -40,6 +33,12 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
+    const existingUser = await getUserById(id);
+    if (!existingUser) {
+      console.error(`User with ID ${id} not found`);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const data = await req.json();
     if (
       data.mobile &&
@@ -49,43 +48,7 @@ export async function PUT(req: NextRequest) {
       data.mobile = parseInt(data.mobile, 10);
     }
 
-    // Verify user existence
-    const existingUser = await db.user.findUnique({ where: { id } });
-    if (!existingUser) {
-      console.error(`User with ID ${id} not found`);
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Prepare nested data update for `address`, if provided
-    const updateData = {
-      ...data,
-      ...(data.address && {
-        address: {
-          upsert: {
-            create: {
-              street: data.address.street,
-              city: data.address.city,
-              state: data.address.state,
-              country: data.address.country,
-              zipCode: data.address.zipCode,
-            },
-            update: {
-              street: data.address.street,
-              city: data.address.city,
-              state: data.address.state,
-              country: data.address.country,
-              zipCode: data.address.zipCode,
-            },
-          },
-        },
-      }),
-    };
-
-    // Update user data
-    const updatedUser = await db.user.update({
-      where: { id },
-      data: updateData,
-    });
+    const updatedUser = await updateUser(id, data);
 
     return NextResponse.json(
       { message: "User updated successfully", updatedUser },

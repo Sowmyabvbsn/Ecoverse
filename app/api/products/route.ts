@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { createProduct, getProducts } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -24,18 +24,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "All fields are required" });
     }
 
-    const newProduct = await db.product.create({
-      data: {
-        title,
-        description,
-        images,
-        price,
-        stocks,
-        sellerId,
-        category,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
-      },
+    const newProduct = await createProduct({
+      title,
+      description,
+      images,
+      price,
+      stocks,
+      sellerId,
+      category,
     });
 
     return NextResponse.json(newProduct, { status: 201 });
@@ -55,50 +51,18 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
     const search = req.nextUrl.searchParams.get("search") || "";
 
-    const skip = (page - 1) * limit;
-
-    const products = await db.product.findMany({
-      where: {
-        ...(sellerId && { sellerId }),
-        ...(search && {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } }, // Search in name
-            {
-              description: {
-                contains: search,
-                mode: "insensitive",
-              },
-            }, // Search in description
-          ],
-        }),
-      },
-      skip,
-      take: limit,
+    const products = await getProducts({
+      sellerId: sellerId || undefined,
+      search: search || undefined,
+      page,
+      limit,
     });
-
-    const totalItem = await db.product.count({
-      where: {
-        ...(sellerId && { sellerId }),
-        ...(search && {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } }, // Search in name
-            {
-              description: {
-                contains: search,
-                mode: "insensitive",
-              },
-            }, // Search in description
-          ],
-        }),
-      },
-    });
-    const totalPage = Math.ceil(totalItem / limit);
 
     return NextResponse.json({
       success: true,
       data: products,
-      totalPage,
-      totalItem,
+      totalPage: Math.ceil(products.length / limit),
+      totalItem: products.length,
     });
   } catch (error) {
     console.log(error);
