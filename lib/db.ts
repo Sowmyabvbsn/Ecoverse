@@ -1,11 +1,20 @@
-import pool, { executeQuery } from './mysql';
+import { supabase, supabaseAdmin } from './supabase';
 
 // User operations
 export const getUserByEmail = async (email: string) => {
   try {
-    const query = 'SELECT * FROM users WHERE email = ?';
-    const results = await executeQuery(query, [email]) as any[];
-    return results[0] || null;
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching user by email:', error);
+      return null;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error fetching user by email:', error);
     return null;
@@ -14,9 +23,21 @@ export const getUserByEmail = async (email: string) => {
 
 export const getUserById = async (id: string) => {
   try {
-    const query = 'SELECT * FROM users WHERE id = ?';
-    const results = await executeQuery(query, [id]) as any[];
-    return results[0] || null;
+    const { data, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        address:addresses(*)
+      `)
+      .eq('id', id)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching user by id:', error);
+      return null;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error fetching user by id:', error);
     return null;
@@ -30,17 +51,19 @@ export const createUser = async (userData: {
   role?: string;
 }) => {
   try {
-    const query = `
-      INSERT INTO users (name, email, password, role) 
-      VALUES (?, ?, ?, ?)
-    `;
-    const result = await executeQuery(query, [
-      userData.name,
-      userData.email,
-      userData.password,
-      userData.role || 'BUYER'
-    ]);
-    return result;
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+        role: userData.role || 'BUYER'
+      }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;
@@ -49,29 +72,22 @@ export const createUser = async (userData: {
 
 export const updateUser = async (id: string, userData: any) => {
   try {
-    const fields = [];
-    const values = [];
+    // Update user data
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .update(userData)
+      .eq('id', id)
+      .select()
+      .single();
     
-    for (const [key, value] of Object.entries(userData)) {
-      if (key !== 'address' && value !== undefined) {
-        fields.push(`${key} = ?`);
-        values.push(value);
-      }
-    }
-    
-    if (fields.length === 0) return null;
-    
-    values.push(id);
-    const query = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
-    
-    await executeQuery(query, values);
+    if (error) throw error;
     
     // Handle address separately if provided
     if (userData.address) {
       await upsertAddress(id, userData.address);
     }
     
-    return await getUserById(id);
+    return data;
   } catch (error) {
     console.error('Error updating user:', error);
     throw error;
@@ -81,39 +97,18 @@ export const updateUser = async (id: string, userData: any) => {
 // Address operations
 export const upsertAddress = async (userId: string, addressData: any) => {
   try {
-    const checkQuery = 'SELECT id FROM addresses WHERE user_id = ?';
-    const existing = await executeQuery(checkQuery, [userId]) as any[];
+    const { error } = await supabaseAdmin
+      .from('addresses')
+      .upsert({
+        user_id: userId,
+        street: addressData.street,
+        city: addressData.city,
+        state: addressData.state,
+        country: addressData.country,
+        zip_code: addressData.zipCode
+      });
     
-    if (existing.length > 0) {
-      // Update existing address
-      const updateQuery = `
-        UPDATE addresses 
-        SET street = ?, city = ?, state = ?, country = ?, zip_code = ?
-        WHERE user_id = ?
-      `;
-      await executeQuery(updateQuery, [
-        addressData.street,
-        addressData.city,
-        addressData.state,
-        addressData.country,
-        addressData.zipCode,
-        userId
-      ]);
-    } else {
-      // Create new address
-      const insertQuery = `
-        INSERT INTO addresses (user_id, street, city, state, country, zip_code)
-        VALUES (?, ?, ?, ?, ?, ?)
-      `;
-      await executeQuery(insertQuery, [
-        userId,
-        addressData.street,
-        addressData.city,
-        addressData.state,
-        addressData.country,
-        addressData.zipCode
-      ]);
-    }
+    if (error) throw error;
   } catch (error) {
     console.error('Error upserting address:', error);
     throw error;
@@ -123,20 +118,22 @@ export const upsertAddress = async (userId: string, addressData: any) => {
 // Product operations
 export const createProduct = async (productData: any) => {
   try {
-    const query = `
-      INSERT INTO products (title, description, images, seller_id, category, price, stocks)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-    const result = await executeQuery(query, [
-      productData.title,
-      productData.description,
-      JSON.stringify(productData.images),
-      productData.sellerId,
-      JSON.stringify(productData.category),
-      productData.price,
-      productData.stocks
-    ]);
-    return result;
+    const { data, error } = await supabaseAdmin
+      .from('products')
+      .insert([{
+        title: productData.title,
+        description: productData.description,
+        images: productData.images,
+        seller_id: productData.sellerId,
+        category: productData.category,
+        price: productData.price,
+        stocks: productData.stocks
+      }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   } catch (error) {
     console.error('Error creating product:', error);
     throw error;
@@ -150,39 +147,30 @@ export const getProducts = async (filters: {
   limit?: number;
 } = {}) => {
   try {
-    let query = 'SELECT * FROM products';
-    const conditions = [];
-    const params = [];
+    let query = supabase
+      .from('products')
+      .select('*');
     
     if (filters.sellerId) {
-      conditions.push('seller_id = ?');
-      params.push(filters.sellerId);
+      query = query.eq('seller_id', filters.sellerId);
     }
     
     if (filters.search) {
-      conditions.push('(title LIKE ? OR description LIKE ?)');
-      params.push(`%${filters.search}%`, `%${filters.search}%`);
+      query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
     }
     
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
-    }
-    
-    query += ' ORDER BY created_at DESC';
+    query = query.order('created_at', { ascending: false });
     
     if (filters.limit) {
-      const offset = ((filters.page || 1) - 1) * filters.limit;
-      query += ` LIMIT ${filters.limit} OFFSET ${offset}`;
+      const from = ((filters.page || 1) - 1) * filters.limit;
+      const to = from + filters.limit - 1;
+      query = query.range(from, to);
     }
     
-    const results = await executeQuery(query, params) as any[];
+    const { data, error } = await query;
     
-    // Parse JSON fields
-    return results.map(product => ({
-      ...product,
-      images: JSON.parse(product.images || '[]'),
-      category: JSON.parse(product.category || '[]')
-    }));
+    if (error) throw error;
+    return data || [];
   } catch (error) {
     console.error('Error fetching products:', error);
     throw error;
@@ -191,17 +179,18 @@ export const getProducts = async (filters: {
 
 export const getProductById = async (id: string) => {
   try {
-    const query = 'SELECT * FROM products WHERE id = ?';
-    const results = await executeQuery(query, [id]) as any[];
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
     
-    if (results.length === 0) return null;
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching product by id:', error);
+      return null;
+    }
     
-    const product = results[0];
-    return {
-      ...product,
-      images: JSON.parse(product.images || '[]'),
-      category: JSON.parse(product.category || '[]')
-    };
+    return data;
   } catch (error) {
     console.error('Error fetching product by id:', error);
     throw error;
@@ -210,9 +199,13 @@ export const getProductById = async (id: string) => {
 
 export const deleteProduct = async (id: string) => {
   try {
-    const query = 'DELETE FROM products WHERE id = ?';
-    const result = await executeQuery(query, [id]);
-    return result;
+    const { error } = await supabaseAdmin
+      .from('products')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    return true;
   } catch (error) {
     console.error('Error deleting product:', error);
     throw error;
@@ -222,23 +215,16 @@ export const deleteProduct = async (id: string) => {
 // Cart operations
 export const getCartByUserId = async (userId: string) => {
   try {
-    const query = `
-      SELECT c.*, p.title, p.images, p.price as product_price
-      FROM cart c
-      JOIN products p ON c.product_id = p.id
-      WHERE c.user_id = ?
-    `;
-    const results = await executeQuery(query, [userId]) as any[];
+    const { data, error } = await supabase
+      .from('cart')
+      .select(`
+        *,
+        product:products(*)
+      `)
+      .eq('user_id', userId);
     
-    return results.map(item => ({
-      ...item,
-      product: {
-        id: item.product_id,
-        title: item.title,
-        images: JSON.parse(item.images || '[]'),
-        price: item.product_price
-      }
-    }));
+    if (error) throw error;
+    return data || [];
   } catch (error) {
     console.error('Error fetching cart:', error);
     throw error;
@@ -251,14 +237,41 @@ export const addToCart = async (userId: string, productId: string, quantity: num
     const product = await getProductById(productId);
     if (!product) throw new Error('Product not found');
     
-    const query = `
-      INSERT INTO cart (user_id, product_id, quantity, price)
-      VALUES (?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
-    `;
+    // Check if item already exists in cart
+    const { data: existingItem } = await supabase
+      .from('cart')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('product_id', productId)
+      .single();
     
-    const result = await executeQuery(query, [userId, productId, quantity, product.price]);
-    return result;
+    if (existingItem) {
+      // Update quantity
+      const { data, error } = await supabaseAdmin
+        .from('cart')
+        .update({ quantity: existingItem.quantity + quantity })
+        .eq('id', existingItem.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      // Insert new item
+      const { data, error } = await supabaseAdmin
+        .from('cart')
+        .insert([{
+          user_id: userId,
+          product_id: productId,
+          quantity,
+          price: product.price
+        }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
   } catch (error) {
     console.error('Error adding to cart:', error);
     throw error;
@@ -268,11 +281,23 @@ export const addToCart = async (userId: string, productId: string, quantity: num
 export const updateCartQuantity = async (cartId: string, quantity: number) => {
   try {
     if (quantity <= 0) {
-      const deleteQuery = 'DELETE FROM cart WHERE id = ?';
-      return await executeQuery(deleteQuery, [cartId]);
+      const { error } = await supabaseAdmin
+        .from('cart')
+        .delete()
+        .eq('id', cartId);
+      
+      if (error) throw error;
+      return true;
     } else {
-      const updateQuery = 'UPDATE cart SET quantity = ? WHERE id = ?';
-      return await executeQuery(updateQuery, [quantity, cartId]);
+      const { data, error } = await supabaseAdmin
+        .from('cart')
+        .update({ quantity })
+        .eq('id', cartId)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
     }
   } catch (error) {
     console.error('Error updating cart quantity:', error);
@@ -282,13 +307,15 @@ export const updateCartQuantity = async (cartId: string, quantity: number) => {
 
 export const deleteCartItem = async (cartId: string) => {
   try {
-    const query = 'DELETE FROM cart WHERE id = ?';
-    const result = await executeQuery(query, [cartId]);
-    return result;
+    const { error } = await supabaseAdmin
+      .from('cart')
+      .delete()
+      .eq('id', cartId);
+    
+    if (error) throw error;
+    return true;
   } catch (error) {
     console.error('Error deleting cart item:', error);
     throw error;
   }
 };
-
-export default pool;
