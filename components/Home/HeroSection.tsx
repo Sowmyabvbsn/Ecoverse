@@ -8,11 +8,12 @@ const HeroSection = () => {
     <section className="relative  bg-cover bg-center bg-no-repeat py-20 md:py-40">
       {/* Background Image */}
       <Image
-        src="/assets/eco-bid-banner.jpg"
+        src="https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         alt="Hero Image"
         fill
         className="object-cover object-center"
         priority
+        sizes="100vw"
       />
       {/* Black transparent overlay */}
       <div className="absolute inset-0 bg-black opacity-70 "></div>

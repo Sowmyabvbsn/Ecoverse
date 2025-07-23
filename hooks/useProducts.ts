@@ -23,6 +23,7 @@ const useProduct = () => {
 
   const createProduct = async (data: IProduct) => {
     try {
+      dispatch(setShowLoading(true));
       const response = await fetch("http://localhost:3000/api/products", {
         method: "POST",
         body: JSON.stringify(data),
@@ -33,6 +34,8 @@ const useProduct = () => {
       dispatch(setSellerProducts([...memoizedSellerProducts, newProduct]));
     } catch (error) {
       console.log(error);
+    } finally {
+      dispatch(setShowLoading(false));
     }
   };
 
@@ -42,7 +45,7 @@ const useProduct = () => {
       try {
         dispatch(setShowLoading(true));
         const response = await fetch(
-          `http://localhost:3000/api/products?sellerId=${sellerId}`
+          `/api/products?sellerId=${sellerId}`
         );
 
         const products = await response.json();
@@ -60,7 +63,7 @@ const useProduct = () => {
     if (memoizedProducts && memoizedProducts.length > 0) return;
     try {
       dispatch(setShowLoading(true));
-      const response = await fetch(`http://localhost:3000/api/products`);
+      const response = await fetch(`/api/products`);
 
       const products = await response.json();
       dispatch(setProducts(products.data));
@@ -83,7 +86,7 @@ const useProduct = () => {
       try {
         dispatch(setShowLoading(true));
         const response = await fetch(
-          `http://localhost:3000/api/products/${id}`
+          `/api/products/${id}`
         );
         const product = await response.json();
 

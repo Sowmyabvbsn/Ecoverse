@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { getUserByEmail, getUserRoleByID } from "./data/user";
+import { getUserByEmail, getUserById } from "./data/user";
 import { LoginSchema } from "./schemas";
 
 export default {
@@ -10,7 +10,8 @@ export default {
     async jwt({ token, user }) {
       if (user) {
         const userId = token.sub as string;
-        token.role = await getUserRoleByID(userId);
+        const userData = await getUserById(userId);
+        token.role = userData?.role;
       }
 
       return token;
@@ -30,15 +31,21 @@ export default {
     }),
     Credentials({
       async authorize(credentials) {
+        console.log('Attempting to authorize with credentials:', { email: credentials?.email });
+        
         const validateFields = LoginSchema.safeParse(credentials);
 
         if (validateFields.success) {
           const { email, password } = validateFields.data;
 
           const user = await getUserByEmail(email);
+          console.log('User found:', user ? 'Yes' : 'No');
+          
           if (!user || !user.password) return null;
 
           const passwordMatch = await bcrypt.compare(password, user.password);
+          console.log('Password match:', passwordMatch);
+          
           if (passwordMatch) return user;
         }
 

@@ -16,7 +16,7 @@ const useCart = () => {
         dispatch(setShowLoading(true));
 
         const response = await fetch(
-          `http://localhost:3000/api/cart?id=${userId}`
+          `/api/cart?id=${userId}`
         );
         const data = await response.json();
         dispatch(setCarts(data.data));
@@ -37,7 +37,7 @@ const useCart = () => {
     quantity?: number
   ) => {
     try {
-      const response = await fetch("http://localhost:3000/api/cart", {
+      const response = await fetch("/api/cart", {
         method: "POST",
         body: JSON.stringify({
           userId,
@@ -93,7 +93,7 @@ const useCart = () => {
     try {
       // Set a debounce timeout to trigger the API request after 300ms of inactivity
       debounceTimeout.current = setTimeout(async () => {
-        const response = await fetch(`http://localhost:3000/api/cart`, {
+        const response = await fetch(`/api/cart`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -135,7 +135,7 @@ const useCart = () => {
       const updatedCarts = carts.filter((item) => item.id !== cartId);
       dispatch(setCarts(updatedCarts));
 
-      const response = await fetch(`http://localhost:3000/api/cart`, {
+      const response = await fetch(`/api/cart`, {
         method: "DELETE",
         body: JSON.stringify({
           id: cartId,

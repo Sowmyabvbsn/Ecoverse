@@ -4,7 +4,8 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 
 import { RegisterSchema } from "@/schemas";
-import { getUserByEmail, createUser } from "@/lib/db";
+import { getUserByEmail } from "@/lib/db";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validationFields = RegisterSchema.safeParse(values);
@@ -23,12 +24,28 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Email already in use!" };
   }
 
-  await createUser({
-    name,
-    email,
-    password: hashPassword,
-    role: "BUYER",
-  });
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        name,
+        email,
+        password: hashPassword,
+        role: "BUYER",
+      }])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating user:', error);
+      return { error: "Failed to create user!" };
+    }
+    
+    console.log('User created successfully:', data);
+  } catch (error) {
+    console.error('Error in user creation:', error);
+    return { error: "Failed to create user!" };
+  }
 
   return { success: "User Created!" };
 };

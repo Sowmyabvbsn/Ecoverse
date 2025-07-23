@@ -18,7 +18,7 @@ const data: ICard[] = [
     time: "2:15:30",
     currentBid: 45,
     buyNow: 80,
-    image: "https://g-aeaz6ajxyxp.vusercontent.net/placeholder.svg",
+    image: "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400",
     badges: ["Upcycled", "Local Artisan"],
   },
   {
@@ -26,7 +26,7 @@ const data: ICard[] = [
     time: "1:30:45",
     currentBid: 15,
     buyNow: 30,
-    image: "https://g-aeaz6ajxyxp.vusercontent.net/placeholder.svg",
+    image: "https://images.pexels.com/photos/4099354/pexels-photo-4099354.jpeg?auto=compress&cs=tinysrgb&w=400",
     badges: ["Zero Waste", "Carbon Neutral"],
   },
   {
@@ -34,7 +34,7 @@ const data: ICard[] = [
     time: "3:45:00",
     currentBid: 75,
     buyNow: 120,
-    image: "https://g-aeaz6ajxyxp.vusercontent.net/placeholder.svg",
+    image: "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=400",
     badges: ["Eco-Tech", "Energy Efficient"],
   },
 ];

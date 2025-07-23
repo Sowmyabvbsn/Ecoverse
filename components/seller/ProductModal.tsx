@@ -88,6 +88,7 @@ export const ProductModal = () => {
   const onSubmit = async (values: z.infer<typeof productSchema>) => {
     try {
       startTransition(async () => {
+  
         const uploadPromises = uploadMultipleFile(selectedImages);
 
         const results = await Promise.all(uploadPromises); // Wait for all uploads
@@ -111,6 +112,7 @@ export const ProductModal = () => {
     } finally {
       form.reset();
       setSelectedCategory([]);
+
     }
   };
   return (

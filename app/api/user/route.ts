@@ -40,6 +40,8 @@ export async function PUT(req: NextRequest) {
     }
 
     const data = await req.json();
+    
+    // Handle mobile number conversion
     if (
       data.mobile &&
       typeof data.mobile === "string" &&
@@ -55,6 +57,7 @@ export async function PUT(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
+    console.error("Error updating user:", error);
     return NextResponse.json({ message: error }, { status: 500 });
   }
 }

@@ -45,8 +45,15 @@ export const RegisterForm = () => {
 
     startTransition(() => {
       register(values).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.success);
+        if (data?.error) {
+          setError(data.error);
+        } else if (data?.success) {
+          setSuccess(data.success);
+          // Optionally redirect to login page after successful registration
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
+        }
       });
     });
   };

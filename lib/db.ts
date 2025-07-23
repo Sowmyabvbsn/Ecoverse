@@ -3,7 +3,7 @@ import { supabase, supabaseAdmin } from './supabase';
 // User operations
 export const getUserByEmail = async (email: string) => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', email)
@@ -23,11 +23,11 @@ export const getUserByEmail = async (email: string) => {
 
 export const getUserById = async (id: string) => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('users')
       .select(`
         *,
-        address:addresses(*)
+        addresses(*)
       `)
       .eq('id', id)
       .single();
@@ -35,6 +35,11 @@ export const getUserById = async (id: string) => {
     if (error && error.code !== 'PGRST116') {
       console.error('Error fetching user by id:', error);
       return null;
+    }
+    
+    // Transform the data to match the expected structure
+    if (data && data.addresses && data.addresses.length > 0) {
+      data.address = data.addresses[0];
     }
     
     return data;
