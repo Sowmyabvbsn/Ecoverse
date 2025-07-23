@@ -35,29 +35,30 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-# EcoBid
+## EcoBid - Sustainable Auction Marketplace
 
-## Database Setup
+### Database Setup (Supabase)
 
-This project now uses MySQL instead of Prisma. To set up the database:
+This project uses Supabase as the database and backend service. To set up:
 
-1. Install MySQL on your system
-2. Create a database named `ecobid`
-3. Run the SQL schema file: `mysql -u root -p ecobid < lib/db-schema.sql`
-4. Update your `.env` file with MySQL connection details:
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Copy your project URL and API keys
+3. Update your `.env.local` file with Supabase credentials:
    ```
-   MYSQL_HOST=localhost
-   MYSQL_PORT=3306
-   MYSQL_USER=root
-   MYSQL_PASSWORD=your_password
-   MYSQL_DATABASE=ecobid
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    ```
+4. The database schema will be automatically applied from the migration file
 
-## Features
+### Features
 
-- MySQL database with connection pooling
+- Supabase PostgreSQL database with real-time capabilities
 - User authentication with NextAuth.js
 - Product management
 - Shopping cart functionality
 - User profiles and addresses
 - Reviews and ratings
+- Real-time updates
+- Row Level Security (RLS)
+- File storage for product images
